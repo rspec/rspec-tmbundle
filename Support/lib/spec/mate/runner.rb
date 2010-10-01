@@ -35,7 +35,6 @@ module Spec
         argv += ENV['TM_RSPEC_OPTS'].split(" ") if ENV['TM_RSPEC_OPTS']
         Dir.chdir(project_directory) do
           if rspec2?
-            ::RSpec::Core::Runner.disable_autorun!
             ::RSpec::Core::Runner.run(argv, STDERR, stdout)
           else
             ::Spec::Runner::CommandLine.run(::Spec::Runner::OptionParser.parse(argv, STDERR, stdout))
