@@ -2,7 +2,9 @@
 
 ## Installation
 
-    cd ~/Library/Application\ Support/TextMate/Bundles/
+    TM_BUNDLES_DIR=~/Library/Application\ Support/TextMate/Pristine\ Copy/Bundles
+    mkdir -p "$TM_BUNDLES_DIR"
+    cd "$TM_BUNDLES_DIR"
     git clone git://github.com/rspec/rspec-tmbundle.git RSpec.tmbundle
     osascript -e 'tell app "TextMate" to reload bundles'
 
@@ -69,4 +71,3 @@ Parts of RSpec.tmbundle is based on Florian Weber's TDDMate.
 
 ## License
 The license of RSpec.tmbundle is the same as [RSpec](http://github.com/rspec/rspec/blob/master/License.txt)'s.
-
