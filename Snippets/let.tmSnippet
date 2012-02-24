@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>let(:${1:instance}) { $0 }</string>
+	<string>let(:${1:instance}) do
+  $0
+end</string>
 	<key>name</key>
 	<string>let</string>
 	<key>scope</key>

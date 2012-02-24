@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>describe '${1:subject}' do
+	<string>let!(:${1:instance}) do
   $0
 end</string>
 	<key>name</key>
-	<string>describe (String)</string>
+	<string>let!</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>tabTrigger</key>
-	<string>des</string>
+	<string>let!</string>
 	<key>uuid</key>
-	<string>34CBBD13-CE8E-4601-9968-C2CB0D771CA5</string>
+	<string>45B1F34A-B431-4DB5-ADD4-EFBE6AC492A4</string>
 </dict>
 </plist>
