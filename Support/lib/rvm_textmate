@@ -1,2 +1,8 @@
-[[ -f "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
-[[ -f "$TM_PROJECT_DIRECTORY/.rvmrc" ]] && . "$TM_PROJECT_DIRECTORY/.rvmrc"
+which rbenv >/dev/null
+if [ "$?" == "0" ]; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+else
+    [[ -f "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+    [[ -f "$TM_PROJECT_DIRECTORY/.rvmrc" ]] && . "$TM_PROJECT_DIRECTORY/.rvmrc"
+fi
