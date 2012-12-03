@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>it "${1:does something}"${2: do
+	<string>it '${1:does something}' do
   $0
-end}</string>
+end</string>
 	<key>name</key>
 	<string>it (does something)</string>
 	<key>scope</key>
-	<string>source.ruby.rspec</string>
+	<string>source.ruby.rspec, source.ruby.rails.spec</string>
 	<key>tabTrigger</key>
 	<string>it</string>
 	<key>uuid</key>

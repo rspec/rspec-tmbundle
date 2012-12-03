@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>context "${1:context}" do
+	<string>context '${1:context}' do
   $0
 end</string>
 	<key>name</key>
 	<string>context</string>
 	<key>scope</key>
-	<string>source.ruby.rspec</string>
+	<string>source.ruby.rspec, source.ruby.rails.spec</string>
 	<key>tabTrigger</key>
 	<string>con</string>
 	<key>uuid</key>
