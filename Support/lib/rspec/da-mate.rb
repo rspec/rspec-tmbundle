@@ -4,10 +4,12 @@ def run_rspec(*args)
   save_as_last_run(args)
   seed = rand(65535)
   args += %W(--format textmate --order rand:#{seed})
-  if zeus_available?
+  if binstub_available?
+    run_with_echo("bin/rspec", *args)
+  elsif zeus_available?
     run_with_echo("zeus", "rspec", *args)
   else
-    puts "zeus not available, falling back to bundle exec ...<br>"
+    puts "Neither binstubs nor zeus available, falling back to bundle exec ...<br>"
     run_with_echo("bundle", "exec", "rspec", *args)
   end
 end
@@ -29,6 +31,10 @@ end
 def run_with_echo(*args)
   puts args.map{ |a| a.sub(Dir.pwd, ".") }.join(" "), "<br>"
   system *args
+end
+
+def binstub_available?
+  File.exist?("bin/rspec")
 end
 
 def zeus_available?
