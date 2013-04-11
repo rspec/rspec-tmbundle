@@ -29,7 +29,7 @@ def load_last_run_args
 end
 
 def run_with_echo(*args)
-  puts args.map{ |a| a.sub(Dir.pwd, ".") }.join(" "), "<br>"
+  puts "<pre style='font-size: 11px'>" + args.map{ |a| a.sub(Dir.pwd, ".") }.join(" ") + "</pre>"
   system *args
 end
 
