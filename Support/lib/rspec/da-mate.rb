@@ -1,6 +1,7 @@
 LAST_RUN_FILENAME = "/tmp/textmate_rspec_last_run"
 
 def run_rspec(*args)
+  Dir.chdir ENV["TM_PROJECT_DIRECTORY"]
   save_as_last_run(args)
   seed = rand(65535)
   args += %W(--format textmate --order rand:#{seed})
