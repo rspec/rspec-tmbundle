@@ -15,6 +15,25 @@ def run_rspec(*args)
   end
 end
 
+def run_rspec_in_terminal(*args)
+  require "shellwords"
+  
+  shellcmd = "cd #{Shellwords.escape ENV["TM_PROJECT_DIRECTORY"]}; "
+  shellcmd << "#{binstub_available? ? 'bin/rspec' : 'bundle exec rspec'} #{args.join(' ')}"
+   
+  applescript = %{
+    tell application "Terminal" to activate
+    tell application "System Events"
+    	tell process "Terminal" to keystroke "t" using command down
+    end tell
+    tell application "Terminal"
+      do script "#{shellcmd}" in the last tab of window 1
+    end tell
+  }
+  
+   open("|osascript", "w") { |io| io << applescript }
+end
+
 def rerun_rspec
   run_rspec *load_last_run_args
 end
@@ -35,9 +54,9 @@ def run_with_echo(*args)
 end
 
 def binstub_available?
-  File.exist?("bin/rspec")
+  File.exist?(ENV["TM_PROJECT_DIRECTORY"] + "/bin/rspec")
 end
 
 def zeus_available?
-  File.exist?(".zeus.sock")
+  File.exist?(ENV["TM_PROJECT_DIRECTORY"] + "/.zeus.sock")
 end
