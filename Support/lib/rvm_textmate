@@ -1,2 +1,3 @@
 [[ -f "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 [[ -f "$TM_PROJECT_DIRECTORY/.rvmrc" ]] && . "$TM_PROJECT_DIRECTORY/.rvmrc"
+[[ -f "$TM_PROJECT_DIRECTORY/.ruby-version" ]] && cd "$TM_PROJECT_DIRECTORY"
