@@ -56,7 +56,9 @@ if use_bundler?
   require "rubygems"
   require "bundler"
 
-  Bundler.setup
+  Dir.chdir File.expand_path(ENV['TM_PROJECT_DIRECTORY']) do
+    Bundler.setup
+  end
 else
   rspec_lib = find_rspec_lib
 
