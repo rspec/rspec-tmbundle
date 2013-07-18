@@ -38,6 +38,10 @@ def rerun_rspec
   run_rspec *load_last_run_args
 end
 
+def rerun_rspec_in_terminal
+  run_rspec_in_terminal *load_last_run_args
+end
+
 def save_as_last_run(args)
   File.open(LAST_RUN_FILENAME, "w") do |f|
     f.puts Marshal.dump(args)
