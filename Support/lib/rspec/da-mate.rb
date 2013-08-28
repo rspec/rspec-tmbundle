@@ -5,6 +5,7 @@ def run_rspec(*args)
   save_as_last_run(args)
   seed = rand(65535)
   args += %W(--format textmate --order rand:#{seed})
+  remove_rbenv_from_env
   if binstub_available?
     system("bin/rspec", *args)
   elsif zeus_available?
@@ -58,4 +59,18 @@ end
 
 def zeus_available?
   File.exist?(ENV["TM_PROJECT_DIRECTORY"] + "/.zeus.sock")
+end
+
+# See https://github.com/sstephenson/rbenv/issues/121#issuecomment-12735894
+def remove_rbenv_from_env
+  rbenv_root = `rbenv root 2>/dev/null`.chomp
+
+  unless rbenv_root.empty?
+    re = /^#{Regexp.escape rbenv_root}\/(versions|plugins|libexec)\b/
+    paths = ENV["PATH"].split(":")
+    paths.reject! {|p| p =~ re }
+    ENV["PATH"] = paths.join(":")
+    
+    ENV.each{ |name, value| ENV[name] = nil if name =~ /^RBENV_/ }
+  end
 end
