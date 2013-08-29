@@ -20,7 +20,7 @@ def run_rspec_in_terminal(*args)
   require "shellwords"
   
   shellcmd = "cd #{Shellwords.escape ENV["TM_PROJECT_DIRECTORY"]}; "
-  shellcmd << "#{binstub_available? ? 'bin/rspec' : 'bundle exec rspec'} #{args.join(' ')}"
+  shellcmd << "#{binstub_available? ? 'bin/rspec' : 'bundle exec rspec'} " + args.map{ |arg| Shellwords.escape(arg) }.join(" ")
    
   applescript = %{
     tell application "Terminal" to activate
@@ -28,7 +28,7 @@ def run_rspec_in_terminal(*args)
     	tell process "Terminal" to keystroke "t" using command down
     end tell
     tell application "Terminal"
-      do script "#{shellcmd}" in the last tab of window 1
+      do script "#{shellcmd.gsub('\\', '\\\\\\\\').gsub('"', '\\"')}" in the last tab of window 1
     end tell
   }
   
