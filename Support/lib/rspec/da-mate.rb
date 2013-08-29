@@ -21,7 +21,7 @@ def run_rspec_in_terminal(*args)
   
   shellcmd = "cd #{Shellwords.escape ENV["TM_PROJECT_DIRECTORY"]}; "
   shellcmd << "#{binstub_available? ? 'bin/rspec' : 'bundle exec rspec'} " + args.map{ |arg| Shellwords.escape(arg) }.join(" ")
-   
+ 
   applescript = %{
     tell application "Terminal" to activate
     tell application "System Events"
@@ -31,8 +31,8 @@ def run_rspec_in_terminal(*args)
       do script "#{shellcmd.gsub('\\', '\\\\\\\\').gsub('"', '\\"')}" in the last tab of window 1
     end tell
   }
-  
-   open("|osascript", "w") { |io| io << applescript }
+
+  open("|osascript", "w") { |io| io << applescript }
 end
 
 def rerun_rspec
