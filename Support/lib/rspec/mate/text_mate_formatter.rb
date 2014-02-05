@@ -30,8 +30,17 @@ module RSpec
         end
         
         def example_failed(example)
-          # super(example)
-
+          if @printer
+            # @printer was introduced in rspec-core v2.12.0 - https://github.com/rspec/rspec-core/commit/38306aef366a1d60b3d0d9f37788d0c2d1e58804
+            example_failed_with_printer(example)
+          else
+            super
+          end
+        end
+        
+        def example_failed_with_printer(example)
+          @failed_examples << example
+          
           unless @header_red
             @header_red = true
             @printer.make_header_red
