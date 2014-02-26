@@ -9,6 +9,8 @@ def run_rspec(*args)
   args << "--order" << "rand:#{seed}"
   if rspec_3?
     args << "-r" << "#{__dir__}/mate/text_mate_formatter" << "--format" << "RSpec::Mate::Formatters::TextMateFormatter"
+  elsif rspec_2_14?
+    args << "-r" << "#{__dir__}/mate/text_mate_formatter_2_14" << "--format" << "RSpec::Mate::Formatters::TextMateFormatter_2_14"
   else
     args << "--format" << "textmate"
   end
@@ -69,6 +71,10 @@ end
 
 def rspec_3?
   rspec_version.release >= Gem::Version.new("3")
+end
+
+def rspec_2_14?
+  rspec_version.to_s.start_with?("2.14")
 end
 
 def binstub_available?
