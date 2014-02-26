@@ -1,10 +1,17 @@
+require "bundler"
+
 LAST_RUN_FILENAME = "/tmp/textmate_rspec_last_run"
 
 def run_rspec(*args)
   Dir.chdir ENV["TM_PROJECT_DIRECTORY"]
   save_as_last_run(args)
   seed = rand(65535)
-  args += %W(--format textmate --order rand:#{seed})
+  args << "--order" << "rand:#{seed}"
+  if rspec_3?
+    args << "-r" << "#{__dir__}/mate/text_mate_formatter" << "--format" << "RSpec::Mate::Formatters::TextMateFormatter"
+  else
+    args << "--format" << "textmate"
+  end
   remove_rbenv_from_env
   if binstub_available?
     system("bin/rspec", *args)
@@ -51,6 +58,17 @@ end
 
 def load_last_run_args
   Marshal.load(File.read(LAST_RUN_FILENAME))
+end
+
+def rspec_version
+  @rspec_version ||= begin
+    specs = Bundler::LockfileParser.new(Bundler.read_file(Bundler.default_lockfile)).specs
+    specs.detect{ |s| s.name == "rspec-core" }.version
+  end
+end
+
+def rspec_3?
+  rspec_version.release >= Gem::Version.new("3")
 end
 
 def binstub_available?
