@@ -17,10 +17,8 @@ def run_rspec(*args)
   remove_rbenv_from_env
   if binstub_available?
     system("bin/rspec", *args)
-  elsif zeus_available?
-    system("zeus", "rspec", *args)
   else
-    puts "Neither binstubs nor zeus available, falling back to bundle exec ...<br>"
+    puts "No binstubs available, falling back to bundle exec ...<br>"
     system("bundle", "exec", "rspec", *args)
   end
 end
@@ -79,10 +77,6 @@ end
 
 def binstub_available?
   File.exist?(ENV["TM_PROJECT_DIRECTORY"] + "/bin/rspec")
-end
-
-def zeus_available?
-  File.exist?(ENV["TM_PROJECT_DIRECTORY"] + "/.zeus.sock")
 end
 
 # See https://github.com/sstephenson/rbenv/issues/121#issuecomment-12735894
