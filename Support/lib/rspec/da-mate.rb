@@ -6,6 +6,7 @@ def run_rspec(*args)
   Dir.chdir ENV["TM_PROJECT_DIRECTORY"]
   save_as_last_run(args)
   seed = rand(65535)
+  args << "spec" if args.empty? && Dir.exist?("spec")
   args << "--order" << "rand:#{seed}"
   if rspec_3?
     args << "-r" << "#{__dir__}/mate/text_mate_formatter" << "--format" << "RSpec::Mate::Formatters::TextMateFormatter"

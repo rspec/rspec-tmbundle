@@ -9,7 +9,7 @@
 
 require "#{ENV['TM_BUNDLE_SUPPORT']}/lib/rspec/da-mate"
 
-files = ENV['TM_SELECTED_FILES'].scan(/'(.*?)'/).flatten
+files = (ENV['TM_SELECTED_FILES'] || "").scan(/'(.*?)'/).flatten
 run_rspec *files
 </string>
 	<key>input</key>
