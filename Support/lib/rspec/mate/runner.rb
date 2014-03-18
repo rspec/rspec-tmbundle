@@ -35,7 +35,7 @@ module RSpec
       end
 
       def run(stdout, options)
-        formatter  = ENV['TM_RSPEC_FORMATTER'] || 'RSpec::Mate::Formatters::TextMateFormatter'
+        formatter  = ENV['TM_RSPEC_FORMATTER'] || 'textmate'#'RSpec::Mate::Formatters::TextMateFormatter'
         stderr     = StringIO.new
         old_stderr = $stderr
         $stderr    = stderr
