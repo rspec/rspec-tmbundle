@@ -15,7 +15,7 @@ RSpec::Mate::SwitchCommand.new.go_to_twin(ENV['TM_PROJECT_DIRECTORY'], ENV['TM_F
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>keyEquivalent</key>
-	<string>^$</string>
+	<string>^~$</string>
 	<key>name</key>
 	<string>Alternate File</string>
 	<key>outputCaret</key>
