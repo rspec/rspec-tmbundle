@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>feature "${1:feature name}" do
+	<string>feature '${1:feature name}' do
   $0
 end</string>
 	<key>name</key>
