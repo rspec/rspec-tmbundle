@@ -5,32 +5,31 @@
 	<key>beforeRunningCommand</key>
 	<string>saveActiveFile</string>
 	<key>command</key>
-	<string>#!/usr/bin/env bash
-
-. "$TM_BUNDLE_SUPPORT/lib/init-command"
-
-cat &lt;&lt;'RUBYEOF' &gt; /tmp/textmate-command-$$.rb
+	<string>#!/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby
 
 require ENV['TM_BUNDLE_SUPPORT'] + "/lib/rspec/mate"
 # Remembers the last _spec.rb file so that 'Run last spec' command 
 # can be activated from any Ruby source file
 
 RSpec::Mate::Runner.new.save_as_last_remembered_file ENV['TM_FILEPATH']
-
-RUBYEOF
-
-${TM_RUBY:-ruby} /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-command-$$.rb; exit $exit_status
-
 </string>
 	<key>input</key>
 	<string>none</string>
+	<key>inputFormat</key>
+	<string>text</string>
 	<key>name</key>
 	<string>Save Example file and remember</string>
-	<key>output</key>
-	<string>showAsTooltip</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>text</string>
+	<key>outputLocation</key>
+	<string>toolTip</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>uuid</key>
 	<string>AC7FD3DD-A904-4B5B-8B02-4D6F04CD8ED5</string>
+	<key>version</key>
+	<integer>2</integer>
 </dict>
 </plist>
