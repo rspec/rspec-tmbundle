@@ -1,6 +1,7 @@
 require 'cgi'
 require 'rspec/core/formatters/html_formatter'
 
+# This formatter is only used for RSpec 3 (older RSpec versions ship their own TextMateFormatter).
 module RSpec
   module Mate
     module Formatters
@@ -20,7 +21,7 @@ module RSpec
           super(pending_fixed, description, run_time, failure_id, exception, extra_content, false)
         end
       end
-      
+
       class TextMateFormatter < RSpec::Core::Formatters::HtmlFormatter
         RSpec::Core::Formatters.register self, *RSpec::Core::Formatters::Loader.formatters[superclass]
 
@@ -28,11 +29,11 @@ module RSpec
           super
           @printer = HtmlPrinterWithUnescapedBacktrace.new(output)
         end
-      
+
         def backtrace_formatter
           @backtrace_formatter ||= RSpec::Mate::Formatters::BacktraceFormatter.new
         end
-    
+
         def format_backtrace(backtrace, example)
           backtrace_formatter.format_backtrace(backtrace, example.metadata)
         end
