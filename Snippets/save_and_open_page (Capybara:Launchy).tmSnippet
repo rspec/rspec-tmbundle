@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>save_and_open_page</string>
+	<key>name</key>
+	<string>save_and_open_page (Capybara/Launchy)</string>
+	<key>scope</key>
+	<string>source.ruby.rspec</string>
+	<key>tabTrigger</key>
+	<string>sop</string>
+	<key>uuid</key>
+	<string>888938CC-3748-424E-BBD7-26C1B07514D1</string>
+</dict>
+</plist>
