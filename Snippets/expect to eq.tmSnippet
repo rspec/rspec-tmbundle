@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>expect(${1:target}).to ${2:eq(${0:value})}</string>
+	<string>expect(${1:${TM_SELECTED_TEXT:-target}}).${2|to,not_to,to_not|} ${3:eq(${4:value})}</string>
+	<key>keyEquivalent</key>
+	<string>^W</string>
 	<key>name</key>
-	<string>expect to eq</string>
+	<string>expect(actual).to eq(…)</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>tabTrigger</key>
