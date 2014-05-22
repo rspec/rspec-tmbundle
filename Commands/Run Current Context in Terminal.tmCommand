@@ -9,7 +9,7 @@
 
 require "#{ENV['TM_BUNDLE_SUPPORT']}/lib/rspec/da-mate"
 
-run_rspec_in_terminal ENV['TM_FILEPATH'], "--line", ENV['TM_LINE_NUMBER']
+run_rspec_in_terminal ENV['TM_FILEPATH'] + ":" + ENV['TM_LINE_NUMBER']
 </string>
 	<key>input</key>
 	<string>none</string>
