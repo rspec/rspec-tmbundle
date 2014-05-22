@@ -109,7 +109,7 @@ describe RSpec::Mate::Runner do
       html.should_not =~ @second_failing_spec
     end
 
-    it "runs first spec when file and line 8 specified" do
+    it "runs second spec when file and line 8 specified" do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '8'
 
