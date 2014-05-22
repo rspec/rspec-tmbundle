@@ -83,6 +83,22 @@ describe RSpec::Mate::Runner do
       html.should =~ /should pass/
       html.should =~ /should pass too/
     end
+
+    # This spec is necessary because RSpec 3 uses a different codepath in 
+    # RSpec::Core::Runner#run when setting up `argv`.
+    it "works for RSpec3" do
+      ENV['TM_SELECTED_FILES'] = "'/foo.spec' '/bar.spec'"
+
+      @spec_mate.stub(:rspec3? => true)
+      received_argv = nil
+      RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
+        # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
+        # See https://github.com/rspec/rspec-mocks/issues/203
+        received_argv = argv 
+      end
+      @spec_mate.run_files(@test_runner_io)
+      received_argv[0..1].should eq ["/foo.spec", "/bar.spec"]
+    end
   end
 
   describe "#run_last_remembered_file" do
@@ -119,6 +135,22 @@ describe RSpec::Mate::Runner do
 
       html.should_not =~ @first_failing_spec
       html.should =~ @second_failing_spec
+    end
+
+    it "uses new syntax for RSpec 3" do
+      ENV['TM_FILEPATH'] = "/path/to/spec.rb"
+      ENV['TM_LINE_NUMBER'] = '8'
+
+      @spec_mate.stub(:rspec3? => true)
+      received_argv = nil
+      RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
+        # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
+        # See https://github.com/rspec/rspec-mocks/issues/203
+        received_argv = argv 
+      end
+      @spec_mate.run_focussed(@test_runner_io)
+      received_argv.should_not include("--line")
+      received_argv.should include("/path/to/spec.rb:8")
     end
   end
 
