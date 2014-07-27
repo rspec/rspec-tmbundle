@@ -45,7 +45,7 @@ module RSpec
         argv = options[:files].dup
         argv << '--format' << formatter
         argv << '-r' << File.join(File.dirname(__FILE__), 'text_mate_formatter') if formatter == 'RSpec::Mate::Formatters::TextMateFormatter'
-
+        argv << '-r' << File.join(File.dirname(__FILE__), 'filter_bundle_backtrace')
         if options[:line]
           argv << '--line'
           argv << options[:line]
