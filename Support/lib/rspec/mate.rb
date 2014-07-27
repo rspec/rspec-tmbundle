@@ -49,12 +49,24 @@ def use_bundler?
   bundler_option? || (gemfile? && !skip_bundler_option?)
 end
 
+def rspec_version
+  @rspec_version ||= begin
+    if defined?(RSpec::Core)
+      RSpec::Core::Version::STRING
+    elsif defined?(Spec::Version)
+      Spec::VERSION::STRING
+    else
+      raise "Could not determine RSpec version. Please report at https://github.com/rspec/rspec-tmbundle/issues"
+    end
+  end
+end
+
 def rspec2?
-  defined?(RSpec::Core)
+  rspec_version.start_with?("2.")
 end
 
 def rspec3?
-  defined?(RSpec::Core) && RSpec::Core::Version::STRING.start_with?("3.")
+  rspec_version.start_with?("3.")
 end
 
 rspec_lib = nil
