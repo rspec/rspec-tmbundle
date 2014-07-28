@@ -41,15 +41,21 @@ module RSpec
         default_formatter = rspec3? ? 'RSpec::Mate::Formatters::TextMateFormatter' : 'textmate'
         formatter  = ENV['TM_RSPEC_FORMATTER'] || default_formatter
 
+        if rspec3?
+          # If :line is given, only the first file from :files is used. This should be ok though, because
+          # :line is only ever set in #run_focussed, and there :files is always set to a single file only.
+          argv = options[:line] ? ["#{options[:files].first}:#{options[:line]}"] : options[:files].dup
+        else
+          argv = options[:files].dup
+          if options[:line]
+            argv << '--line'
+            argv << options[:line]
+          end
+        end
 
-        argv = options[:files].dup
         argv << '--format' << formatter
         argv << '-r' << File.join(File.dirname(__FILE__), 'text_mate_formatter') if formatter == 'RSpec::Mate::Formatters::TextMateFormatter'
         argv << '-r' << File.join(File.dirname(__FILE__), 'filter_bundle_backtrace')
-        if options[:line]
-          argv << '--line'
-          argv << options[:line]
-        end
 
         if ENV['TM_RSPEC_OPTS']
           argv += ENV['TM_RSPEC_OPTS'].split(" ")
