@@ -5,19 +5,19 @@ require 'rspec/core/formatters/html_formatter'
 module RSpec
   module Mate
     module Formatters
-      class BacktraceFormatter < RSpec::Core::BacktraceFormatter
-        def backtrace_line(line)
-          original = super
-          return nil unless original
-          CGI.escapeHTML(original).sub(/([^:]*\.e?rb):(\d*)/) do
-            "<a href=\"txmt://open?url=file://#{File.expand_path($1)}&line=#{$2}\">#{$1}:#{$2}</a> "
+      class HtmlPrinterWithClickableBacktrace < RSpec::Core::Formatters::HtmlPrinter
+        def make_backtrace_clickable(backtrace)
+          backtrace.gsub!(/(^.*?):(\d+):(.*)/) do
+            path, line, rest = $1, $2, $3
+            url = "txmt://open?url=file://#{CGI::escape(File.expand_path(path))}&line=#{$2}"
+            link_text = "#{path}:#{line}"
+            "<a href='#{CGI::h(url)}'>#{CGI::h(link_text)}</a>:#{CGI.h(rest)}"
           end
         end
-      end
-
-      class HtmlPrinterWithUnescapedBacktrace < RSpec::Core::Formatters::HtmlPrinter
+        
         def print_example_failed(pending_fixed, description, run_time, failure_id, exception, extra_content, escape_backtrace = false)
-          # Call implementation from superclass, but ignore `escape_backtrace` and always pass `false` instead. 
+          exception[:backtrace] = make_backtrace_clickable(exception[:backtrace])
+          # Call original implementation, but pass false for `escape_backtrace`
           super(pending_fixed, description, run_time, failure_id, exception, extra_content, false)
         end
       end
@@ -27,15 +27,7 @@ module RSpec
 
         def initialize(output)
           super
-          @printer = HtmlPrinterWithUnescapedBacktrace.new(output)
-        end
-
-        def backtrace_formatter
-          @backtrace_formatter ||= RSpec::Mate::Formatters::BacktraceFormatter.new
-        end
-
-        def format_backtrace(backtrace, example)
-          backtrace_formatter.format_backtrace(backtrace, example.metadata)
+          @printer = HtmlPrinterWithClickableBacktrace.new(output)
         end
       end
     end
