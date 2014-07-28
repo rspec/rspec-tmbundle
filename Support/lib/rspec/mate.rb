@@ -45,25 +45,46 @@ def gemfile?
   File.exist?(File.join(ENV['TM_PROJECT_DIRECTORY'], 'Gemfile'))
 end
 
+def use_binstub?
+  # Using binstub means we need to look at the Gemfile to determine RSpec version,
+  # so having a Gemfile is mandatory.
+  gemfile? && File.exist?(File.join(ENV['TM_PROJECT_DIRECTORY'], 'bin', 'rspec'))
+end
+
 def use_bundler?
   bundler_option? || (gemfile? && !skip_bundler_option?)
 end
 
+def rspec_version
+  @rspec_version ||= begin
+    if use_binstub?
+      specs = Bundler::LockfileParser.new(Bundler.read_file(File.join(ENV['TM_PROJECT_DIRECTORY'], 'Gemfile.lock'))).specs
+      specs.detect{ |s| s.name == "rspec-core" }.version.to_s
+    elsif defined?(RSpec::Core)
+      RSpec::Core::Version::STRING
+    elsif defined?(Spec::Version)
+      Spec::VERSION::STRING
+    else
+      raise "Could not determine RSpec version. Please report at https://github.com/rspec/rspec-tmbundle/issues"
+    end
+  end
+end
+
 def rspec2?
-  defined?(RSpec::Core)
+  rspec_version.start_with?("2.")
 end
 
 def rspec3?
-  defined?(RSpec::Core) && RSpec::Core::Version::STRING.start_with?("3.")
+  rspec_version.start_with?("3.")
 end
 
 rspec_lib = nil
 
-if use_bundler?
+if use_binstub? || use_bundler?
   require "rubygems"
   require "bundler"
 
-  Bundler.setup
+  Bundler.setup if use_bundler?
 else
   rspec_lib = find_rspec_lib
 
@@ -72,7 +93,9 @@ else
   end
 end
 
-if RSpec::Mate::Options['--rspec-version']
+if use_binstub?
+  # Nothing to do here
+elsif RSpec::Mate::Options['--rspec-version']
   if RSpec::Mate::Options['--rspec-version'] =~ /^2/
     require 'rspec/core'
   else
