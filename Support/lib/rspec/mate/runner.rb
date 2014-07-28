@@ -35,11 +35,11 @@ module RSpec
       end
 
       def run(stdout, options)
-        default_formatter = rspec3? ? 'RSpec::Mate::Formatters::TextMateFormatter' : 'textmate'
-        formatter  = ENV['TM_RSPEC_FORMATTER'] || default_formatter
         stderr     = StringIO.new
         old_stderr = $stderr
         $stderr    = stderr
+        default_formatter = rspec3? ? 'RSpec::Mate::Formatters::TextMateFormatter' : 'textmate'
+        formatter  = ENV['TM_RSPEC_FORMATTER'] || default_formatter
 
 
         argv = options[:files].dup
@@ -56,7 +56,9 @@ module RSpec
         end
 
         Dir.chdir(project_directory) do
-          if rspec2?
+          if use_binstub?
+             system 'bin/rspec', *argv
+          elsif rspec3? || rspec2?
             ::RSpec::Core::Runner.disable_autorun!
             ::RSpec::Core::Runner.run(argv, stderr, stdout)
           else
