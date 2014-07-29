@@ -36,7 +36,7 @@ The bundle commands start ruby via `${TM_RUBY:-ruby} …`, this means:
 
 The bundle then tries to determine which version of RSpec to use. Again, there are two options:
 
-1. If a `Gemfile` is present, the RSpec version from `Gemfile.lock` is used (via Bundler). lorem
+1. If a `Gemfile` is present, the RSpec version from `Gemfile.lock` is used (via Bundler).
 2. If no `Gemfile` is present, the bundle searches `vendor/plugins` and `vendor/gems` for a vendored version of RSpec:
     1. If a vendored version is found, it is used.
     2. If no vendored version is found, the bundle just tries to require RSpec directly. This means that RSpec must be available in Ruby’s `LOAD_PATH`. If you’re using Ruby 1.9 or newer this usually means that the most recent RSpec version installed via rubygems will get used.
