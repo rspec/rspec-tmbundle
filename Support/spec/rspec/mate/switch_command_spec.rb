@@ -137,6 +137,11 @@ EOF
           "/a/full/path/spec/lib/foo/mooky_spec.rb"
         ]
 
+        expect_twins [
+          "/a/full/path/app/lib/foo/mooky.rb",
+          "/a/full/path/spec/app/lib/foo/mooky_spec.rb"
+        ]
+
         it "suggests a controller spec" do
           "/a/full/path/spec/controllers/mooky_controller_spec.rb".should be_a("controller spec")
         end

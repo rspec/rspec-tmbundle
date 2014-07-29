@@ -41,8 +41,12 @@ module RSpec
           case parent
             when 'lib', 'app' then
               if framework.merb_or_rails?
-                path = path.gsub(/\/app\//, "/spec/")
-                path = path.gsub(/\/lib\//, "/spec/lib/")
+                if path.include?("/app/lib/")
+                  path = path.gsub("/app/lib/", "/spec/app/lib/")
+                else
+                  path = path.gsub(/\/app\//, "/spec/")
+                  path = path.gsub(/\/lib\//, "/spec/lib/")
+                end
               else
                 path = path.gsub(/\/lib\//, "/spec/")
               end
@@ -62,8 +66,12 @@ module RSpec
               path = path.gsub(/_spec\.rb$/, ".rb")
 
               if framework.merb_or_rails?
-                path = path.gsub(/\/spec\/lib\//, "/lib/")
-                path = path.gsub(/\/spec\//, "/app/")
+                if path.include?("/spec/app/lib/")
+                  path = path.gsub("/spec/app/lib/", "/app/lib/")
+                else
+                  path = path.gsub(/\/spec\/lib\//, "/lib/")
+                  path = path.gsub(/\/spec\//, "/app/")
+                end
               else
                 path = path.gsub(/\/spec\//, "/lib/")
               end
