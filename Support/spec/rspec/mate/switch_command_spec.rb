@@ -83,28 +83,13 @@ EOF
         ]
 
         expect_twins [
-          "/a/full/path/spec/controllers/application_controller_spec.rb",
-          "/a/full/path/app/controllers/application_controller.rb"
-        ]
-
-        expect_twins [
           "/a/full/path/app/controllers/job_applications_controller.rb",
           "/a/full/path/spec/controllers/job_applications_controller_spec.rb"
         ]
 
         expect_twins [
-          "/a/full/path/spec/controllers/job_applications_controller_spec.rb",
-          "/a/full/path/app/controllers/job_applications_controller.rb"
-        ]
-
-        expect_twins [
           "/a/full/path/app/helpers/application_helper.rb",
           "/a/full/path/spec/helpers/application_helper_spec.rb"
-        ]
-
-        expect_twins [
-          "/a/full/path/spec/helpers/application_helper_spec.rb",
-          "/a/full/path/app/helpers/application_helper.rb"
         ]
 
         expect_twins [
