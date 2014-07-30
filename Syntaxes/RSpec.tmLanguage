@@ -72,6 +72,14 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#behaviour-with-multiline-desc</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#example-with-multiline-desc</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>source.ruby</string>
 		</dict>
 	</array>
@@ -80,7 +88,7 @@
 		<key>behaviour</key>
 		<dict>
 			<key>begin</key>
-			<string>^\s*(describe|context|feature)\b</string>
+			<string>^\s*(describe|context|feature)\b(?=.*\bdo\s*$)</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -89,6 +97,8 @@
 					<string>keyword.other.rspec.behaviour</string>
 				</dict>
 			</dict>
+			<key>comment</key>
+			<string>Begin regexp must not match pending behaviours (see https://github.com/rspec/rspec-tmbundle/issues/31).</string>
 			<key>end</key>
 			<string>\b(do)\s*$</string>
 			<key>endCaptures</key>
@@ -109,10 +119,27 @@
 				</dict>
 			</array>
 		</dict>
+		<key>behaviour-with-multiline-desc</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.other.rspec.behaviour</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Behaviours with multiline descriptions are not matched by `behaviour`, so as a fallback we just highlight the bare keywords</string>
+			<key>match</key>
+			<string>^\s*(describe|context|feature)\b</string>
+			<key>name</key>
+			<string>meta.rspec.behaviour</string>
+		</dict>
 		<key>example</key>
 		<dict>
 			<key>begin</key>
-			<string>^\s*(it|specify|scenario)\b</string>
+			<string>^\s*(it|specify|scenario)\b(?=.*\bdo\s*$)</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -121,6 +148,8 @@
 					<string>keyword.other.rspec.example</string>
 				</dict>
 			</dict>
+			<key>comment</key>
+			<string>Begin regexp must not match pending behaviours (see https://github.com/rspec/rspec-tmbundle/issues/31).</string>
 			<key>end</key>
 			<string>\b(do)\s*$</string>
 			<key>endCaptures</key>
@@ -141,6 +170,23 @@
 				</dict>
 			</array>
 		</dict>
+		<key>example-with-multiline-desc</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.other.rspec.example</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Examples with multiline descriptions are not matched by `behaviour`, so as a fallback we just highlight the bare keywords</string>
+			<key>match</key>
+			<string>^\s*(it|specify|scenario)\b</string>
+			<key>name</key>
+			<string>meta.rspec.example</string>
+		</dict>
 		<key>pending</key>
 		<dict>
 			<key>captures</key>
@@ -159,7 +205,7 @@
 			<key>comment</key>
 			<string>This only works with simple single / double quoted strings. But matching too liberally causes bugs (see https://github.com/rspec/rspec-tmbundle/issues/45), so better err on the safe side.</string>
 			<key>match</key>
-			<string>^\s*(it|specify|scenario)\s+("[^"]*"|'[^']*')(?&lt;!do)\s*$</string>
+			<string>^\s*(it|specify|scenario|describe|context|feature)\s+("[^"]*"|'[^']*')(?&lt;!do)\s*$</string>
 			<key>name</key>
 			<string>meta.rspec.pending</string>
 		</dict>
