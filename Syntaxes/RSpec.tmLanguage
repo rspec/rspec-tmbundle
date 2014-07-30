@@ -156,8 +156,10 @@
 					<string>string.ruby</string>
 				</dict>
 			</dict>
+			<key>comment</key>
+			<string>This only works with simple single / double quoted strings. But matching too liberally causes bugs (see https://github.com/rspec/rspec-tmbundle/issues/45), so better err on the safe side.</string>
 			<key>match</key>
-			<string>^\s*(it|specify|scenario)\s+(.*\S)(?&lt;!do)\s*$</string>
+			<string>^\s*(it|specify|scenario)\s+("[^"]*"|'[^']*')(?&lt;!do)\s*$</string>
 			<key>name</key>
 			<string>meta.rspec.pending</string>
 		</dict>
