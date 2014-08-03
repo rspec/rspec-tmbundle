@@ -123,7 +123,7 @@ directory for rspec-1.
 ## RVM Integration
 
 There are lots of ways to configure TextMate to work with `rvm`,
-but this is the one the we recommend:
+but this is the one that we recommend:
 
 With rvm installed, take the full path to `rvm-auto-ruby`, 
 found via: `which rvm-auto-ruby`
