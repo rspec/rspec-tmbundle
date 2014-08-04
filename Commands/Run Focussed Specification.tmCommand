@@ -16,21 +16,30 @@ RSpec::Mate::Runner.new.run_focussed STDOUT
 
 RUBYEOF
 
-${TM_RUBY:-ruby} /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-command-$$.rb; exit $exit_status
+/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby \
+  /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-command-$$.rb; exit $exit_status
 </string>
 	<key>fallbackInput</key>
 	<string>line</string>
 	<key>input</key>
 	<string>document</string>
+	<key>inputFormat</key>
+	<string>text</string>
 	<key>keyEquivalent</key>
 	<string>@R</string>
 	<key>name</key>
 	<string>Run Single Example</string>
-	<key>output</key>
-	<string>showAsHTML</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>html</string>
+	<key>outputLocation</key>
+	<string>newWindow</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>uuid</key>
 	<string>240FDD9D-CD49-4917-9003-80A3E1DADFBB</string>
+	<key>version</key>
+	<integer>2</integer>
 </dict>
 </plist>

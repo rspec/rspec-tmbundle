@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>scenario '${1:scenario description}' do
-  $0
-end</string>
+	<string>save_and_open_page</string>
 	<key>name</key>
-	<string>scenario</string>
+	<string>save_and_open_page (Capybara/Launchy)</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>tabTrigger</key>
-	<string>sce</string>
+	<string>sp</string>
 	<key>uuid</key>
-	<string>8F5D977F-AD4B-45A5-B6B9-72FEBCBB36B2</string>
+	<string>888938CC-3748-424E-BBD7-26C1B07514D1</string>
 </dict>
 </plist>
