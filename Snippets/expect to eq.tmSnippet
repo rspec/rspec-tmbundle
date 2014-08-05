@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>scenario '${1:scenario description}' do
-  $0
-end</string>
+	<string>expect(${1:${TM_SELECTED_TEXT:-target}}).${2|to,not_to,to_not|} ${3:eq(${4:value})}</string>
+	<key>keyEquivalent</key>
+	<string>^W</string>
 	<key>name</key>
-	<string>scenario</string>
+	<string>expect(actual).to eq(…)</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>tabTrigger</key>
-	<string>sce</string>
+	<string>ex</string>
 	<key>uuid</key>
-	<string>8F5D977F-AD4B-45A5-B6B9-72FEBCBB36B2</string>
+	<string>81AF4016-D543-476F-B70E-D0CF191B9CFD</string>
 </dict>
 </plist>
