@@ -1,21 +1,12 @@
 # RSpec TextMate Bundle
 
+This bundle works with **TextMate 2** and **RSpec 2 and 3**. For TextMate 1 and/or RSpec 1 please use the legacy version from the branch “rspec1-textmate1”.
+
 ## Installation
 
-### TextMate 2
-This bundle is included TextMate’s bundle index. Just go to Preferences → Bundles and make sure “RSpec” is checked.
+Open up TextMate’s preferences, go to “Bundles” and make sure “RSpec” is checked.
 
-### TextMate 1
-```bash
-mkdir -p ~/Library/Application\ Support/TextMate/Pristine\ Copy/Bundles
-cd ~/Library/Application\ Support/TextMate/Pristine\ Copy/Bundles
-git clone git://github.com/rspec/rspec-tmbundle.git RSpec.tmbundle
-osascript -e 'tell app "TextMate" to reload bundles'
-```
-
-## Supports RSpec 1, 2 and 3
-
-`RSpec.tmbundle` works with RSpec versions 1, 2 and 3. Given that they work differently, the bundle tries its best to figure out which one you're using in each project when you try to run RSpec examples. 
+## Running RSpec examples
 
 __Summary:__ If your project has a binstub (`bin/rspec`), make sure you’ve customized TextMate’s `$PATH` to play nicely with your Ruby version manager ([rbenv](https://github.com/sstephenson/rbenv), [rvm](http://rvm.io/), …). If it has a `Gemfile`, the same goes for `$TM_RUBY`. If you’re using the Ruby bundled with Mac OS, you shouldn’t need to customize anything.
 
