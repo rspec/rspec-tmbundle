@@ -1,4 +1,6 @@
-# RSpec TextMate Bundle
+# RSpec TextMate Bundle (legacy version)
+
+This legacy version of the bundle is provided for people using __TextMate 1__ and/or __RSpec 1__. It is not actively maintained. Please use the latest version from the master branch, if possible.
 
 ## Installation
 
