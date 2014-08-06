@@ -89,10 +89,6 @@ end
 
 if use_binstub?
   # Nothing to do here
-elsif RSpec::Mate::Options['--rspec-version']
-  require 'rspec/core'
-elsif rspec_lib
-  require 'rspec/core'
 else
   require 'rspec/core'
 end
