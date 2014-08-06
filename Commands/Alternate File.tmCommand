@@ -5,18 +5,11 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env bash
-
-. "$TM_BUNDLE_SUPPORT/lib/init-command"
-
-cat &lt;&lt;'RUBYEOF' &gt; /tmp/textmate-command-$$.rb
+	<string>#!/usr/bin/env ruby18
 
 require ENV['TM_BUNDLE_SUPPORT'] + "/lib/rspec/mate/switch_command"
 RSpec::Mate::SwitchCommand.new.go_to_twin(ENV['TM_PROJECT_DIRECTORY'], ENV['TM_FILEPATH'])
-
-RUBYEOF
-
-${TM_RUBY:-ruby} /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-command-$$.rb; exit $exit_status</string>
+</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
