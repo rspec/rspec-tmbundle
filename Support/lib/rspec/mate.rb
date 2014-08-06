@@ -62,8 +62,6 @@ def rspec_version
       specs.detect{ |s| s.name == "rspec-core" }.version.to_s
     elsif defined?(RSpec::Core)
       RSpec::Core::Version::STRING
-    elsif defined?(Spec::Version)
-      Spec::VERSION::STRING
     else
       raise "Could not determine RSpec version. Please report at https://github.com/rspec/rspec-tmbundle/issues"
     end
