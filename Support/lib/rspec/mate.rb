@@ -87,9 +87,4 @@ else
   end
 end
 
-if use_binstub?
-  # Nothing to do here
-else
-  require 'rspec/core'
-end
-
+require 'rspec/core' unless use_binstub?
