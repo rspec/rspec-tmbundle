@@ -68,10 +68,6 @@ def rspec_version
   end
 end
 
-def rspec2?
-  rspec_version.start_with?("2.")
-end
-
 def rspec3?
   rspec_version.start_with?("3.")
 end
