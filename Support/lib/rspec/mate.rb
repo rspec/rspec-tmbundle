@@ -90,22 +90,10 @@ end
 if use_binstub?
   # Nothing to do here
 elsif RSpec::Mate::Options['--rspec-version']
-  if RSpec::Mate::Options['--rspec-version'] =~ /^2/
-    require 'rspec/core'
-  else
-    require 'spec/autorun'
-  end
+  require 'rspec/core'
 elsif rspec_lib
-  if File.exist?(File.join(rspec_lib, 'rspec', 'core.rb'))
-    require 'rspec/core'
-  else
-    require 'spec/autorun'
-  end
+  require 'rspec/core'
 else
-  begin
-    require 'rspec/core'
-  rescue LoadError
-    require 'spec/autorun'
-  end
+  require 'rspec/core'
 end
 
