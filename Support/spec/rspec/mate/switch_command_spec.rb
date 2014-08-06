@@ -47,7 +47,7 @@ module RSpec
           regular_spec = <<-SPEC
 require 'spec_helper'
 
-describe ${1:Type} do
+describe ${1:${TM_FILENAME/(?:\\A|_)([A-Za-z0-9]+)(?:(?:_spec)?\\.[a-z]+)*/(?2::\\u$1)/g}} do
   $0
 end
 SPEC
