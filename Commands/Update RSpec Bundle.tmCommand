@@ -5,7 +5,10 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>cd "$TM_BUNDLE_PATH"
+	<string>#!/usr/bin/env bash
+[[ -f "${TM_SUPPORT_PATH}/lib/bash_init.sh" ]] &amp;&amp; . "${TM_SUPPORT_PATH}/lib/bash_init.sh"
+
+cd "$TM_BUNDLE_PATH"
 
 echo "&lt;pre&gt;"
 [ -d ".svn" ] &amp;&amp; svn up
@@ -14,14 +17,23 @@ echo "&lt;pre&gt;"
 
 osascript -e 'tell app "TextMate" to reload bundles'
 
-echo "&lt;/pre&gt;"</string>
+echo "&lt;/pre&gt;"
+</string>
 	<key>input</key>
 	<string>selection</string>
+	<key>inputFormat</key>
+	<string>text</string>
 	<key>name</key>
 	<string>Update RSpec Bundle</string>
-	<key>output</key>
-	<string>showAsHTML</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>html</string>
+	<key>outputLocation</key>
+	<string>newWindow</string>
 	<key>uuid</key>
 	<string>1C280956-9F2D-4C91-862E-ECE5FFFFEA41</string>
+	<key>version</key>
+	<integer>2</integer>
 </dict>
 </plist>

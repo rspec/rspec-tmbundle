@@ -15,13 +15,21 @@ RSpec::Mate::Runner.new.save_as_last_remembered_file ENV['TM_FILEPATH']
 </string>
 	<key>input</key>
 	<string>none</string>
+	<key>inputFormat</key>
+	<string>text</string>
 	<key>name</key>
 	<string>Save Example file and remember</string>
-	<key>output</key>
-	<string>showAsTooltip</string>
+	<key>outputCaret</key>
+	<string>afterOutput</string>
+	<key>outputFormat</key>
+	<string>text</string>
+	<key>outputLocation</key>
+	<string>toolTip</string>
 	<key>scope</key>
 	<string>source.ruby.rspec</string>
 	<key>uuid</key>
 	<string>AC7FD3DD-A904-4B5B-8B02-4D6F04CD8ED5</string>
+	<key>version</key>
+	<integer>2</integer>
 </dict>
 </plist>
