@@ -191,7 +191,11 @@ SPEC
         described = described.compact.reject(&:empty?).join('::')
 
         File.open(path, 'w') do |f|
-          f.write "require 'spec_helper'\n\ndescribe #{described} do\n  \nend\n"
+          f.puts "require 'spec_helper'"
+          f.puts ''
+          f.puts 'describe #{described} do'
+          f.puts '  ' # <= caret will be here
+          f.puts 'end'
         end
         system ENV['TM_SUPPORT_PATH']+'/bin/mate', path, '-l4:3'
       end
