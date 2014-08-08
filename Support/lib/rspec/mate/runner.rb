@@ -1,11 +1,13 @@
 require 'stringio'
 require 'cgi'
 require 'shellwords'
+require 'yaml'
 
 module RSpec
   module Mate
     class Runner
       LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt"
+      LAST_RUN_CACHE             = "/tmp/textmate_rspec_last_run.yml"
       
       def run_files(stdout, options={})
         files = ENV['TM_SELECTED_FILES'] ? Shellwords.shellwords(ENV['TM_SELECTED_FILES']) : ["spec/"]
@@ -40,6 +42,7 @@ module RSpec
         $stderr    = stderr
 
         argv = build_argv_from_options(options)
+        save_as_last_run(argv)
 
         Dir.chdir(project_directory) do
           if use_binstub?
@@ -115,6 +118,12 @@ module RSpec
 
         if file.size > 0
           File.expand_path(file)
+        end
+      end
+
+      def save_as_last_run(args)
+        File.open(LAST_RUN_CACHE, "w") do |f|
+          f.write YAML.dump(args)
         end
       end
 
