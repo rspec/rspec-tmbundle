@@ -62,16 +62,10 @@ def rspec_version
       specs.detect{ |s| s.name == "rspec-core" }.version.to_s
     elsif defined?(RSpec::Core)
       RSpec::Core::Version::STRING
-    elsif defined?(Spec::Version)
-      Spec::VERSION::STRING
     else
       raise "Could not determine RSpec version. Please report at https://github.com/rspec/rspec-tmbundle/issues"
     end
   end
-end
-
-def rspec2?
-  rspec_version.start_with?("2.")
 end
 
 def rspec3?
@@ -93,25 +87,4 @@ else
   end
 end
 
-if use_binstub?
-  # Nothing to do here
-elsif RSpec::Mate::Options['--rspec-version']
-  if RSpec::Mate::Options['--rspec-version'] =~ /^2/
-    require 'rspec/core'
-  else
-    require 'spec/autorun'
-  end
-elsif rspec_lib
-  if File.exist?(File.join(rspec_lib, 'rspec', 'core.rb'))
-    require 'rspec/core'
-  else
-    require 'spec/autorun'
-  end
-else
-  begin
-    require 'rspec/core'
-  rescue LoadError
-    require 'spec/autorun'
-  end
-end
-
+require 'rspec/core' unless use_binstub?

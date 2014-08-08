@@ -64,13 +64,9 @@ module RSpec
         Dir.chdir(project_directory) do
           if use_binstub?
              system 'bin/rspec', *argv
-          elsif rspec3? || rspec2?
+          else
             ::RSpec::Core::Runner.disable_autorun!
             ::RSpec::Core::Runner.run(argv, stderr, stdout)
-          else
-            ::Spec::Runner::CommandLine.run(
-              ::Spec::Runner::OptionParser.parse(argv, stderr, stdout)
-            )
           end
         end
       rescue Exception => e
