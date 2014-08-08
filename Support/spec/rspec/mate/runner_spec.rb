@@ -98,6 +98,18 @@ describe RSpec::Mate::Runner do
       @spec_mate.run_files(@test_runner_io)
       received_argv[0..1].should eq ["/foo.spec", "/bar.spec"]
     end
+    
+    it 'runs all examples in "spec/" if nothing is selected' do
+      ENV['TM_SELECTED_FILES'] = nil
+      received_argv = nil
+      RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
+        # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
+        # See https://github.com/rspec/rspec-mocks/issues/203
+        received_argv = argv 
+      end
+      @spec_mate.run_files(@test_runner_io)
+      received_argv[0].should eq "spec/"
+    end
   end
 
   describe "#run_last_remembered_file" do

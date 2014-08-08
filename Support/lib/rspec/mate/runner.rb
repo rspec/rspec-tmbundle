@@ -6,7 +6,7 @@ module RSpec
   module Mate
     class Runner
       def run_files(stdout, options={})
-        files = Shellwords.shellwords(ENV['TM_SELECTED_FILES'])
+        files = ENV['TM_SELECTED_FILES'] ? Shellwords.shellwords(ENV['TM_SELECTED_FILES']) : ["spec/"]
         options.merge!({:files => files})
         run(stdout, options)
       end
