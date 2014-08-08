@@ -5,6 +5,8 @@ require 'shellwords'
 module RSpec
   module Mate
     class Runner
+      LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt"
+      
       def run_files(stdout, options={})
         files = ENV['TM_SELECTED_FILES'] ? Shellwords.shellwords(ENV['TM_SELECTED_FILES']) : ["spec/"]
         options.merge!({:files => files})
@@ -93,20 +95,16 @@ module RSpec
       end
 
       def save_as_last_remembered_file(file)
-        File.open(last_remembered_file_cache, "w") do |f|
+        File.open(LAST_REMEMBERED_FILE_CACHE, "w") do |f|
           f << file
         end
-      end
-
-      def last_remembered_file_cache
-        "/tmp/textmate_rspec_last_remembered_file_cache.txt"
       end
 
 
     private
 
       def last_remembered_single_file
-        file = File.read(last_remembered_file_cache).strip
+        file = File.read(LAST_REMEMBERED_FILE_CACHE).strip
 
         if file.size > 0
           File.expand_path(file)
