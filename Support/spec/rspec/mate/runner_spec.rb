@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'stringio'
+require 'shellwords'
 
 describe RSpec::Mate::Runner do
   before(:each) do
@@ -70,9 +71,7 @@ describe RSpec::Mate::Runner do
       ]
 
       # TODO: adjust fixtures_path to take an array
-      ENV['TM_SELECTED_FILES'] = fixtures.map do |fixture|
-        "'#{fixtures_path(fixture)}'"
-      end.join(" ")
+      ENV['TM_SELECTED_FILES'] = Shellwords.join(fixtures.map{ |fixture| fixtures_path(fixture) })
 
       @spec_mate.run_files(@test_runner_io)
       @test_runner_io.rewind
@@ -87,7 +86,7 @@ describe RSpec::Mate::Runner do
     # This spec is necessary because RSpec 3 uses a different codepath in 
     # RSpec::Core::Runner#run when setting up `argv`.
     it "works for RSpec3" do
-      ENV['TM_SELECTED_FILES'] = "'/foo.spec' '/bar.spec'"
+      ENV['TM_SELECTED_FILES'] = "/foo.spec /bar.spec"
 
       @spec_mate.stub(:rspec3? => true)
       received_argv = nil
