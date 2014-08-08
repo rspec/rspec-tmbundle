@@ -37,19 +37,43 @@ If your `Gemfile` is located at a non-standard location, you can add `--bundler`
 
 ## Configuration
 
-In addition to the standard TextMate shell variables, the RSpecTextMate bundle supports the following:
+### Options
 
-### TM\_RSPEC\_FORMATTER
+You can set the following options in an `.rspec-tm` file in the
+root directory of your project:
 
-Set a custom formatter other than RSpec's TextMate formatter. Use the full classname, e.g. `'Spec::Core::Formatters::WebKit'`
+#### --rspec-version
 
-### TM\_RSPEC\_OPTS
+see RSpec-version, above.
 
-Use this to set RSpec options just as you would in an `.rspec` file.
+#### --bundler
 
-### TM\_RSPEC\_HOME
+Use `Bundler`, even if there is no `Gemfile` (in which case you
+should have the `BUNDLER_GEMFILE` environment variable set).
 
-If you're hacking on rspec yourself, point this to the`rspec-core` project directory for rspec-2, or the `rspec`
+#### --skip-bundler
+
+Don't use `Bundler`, even if there is a `Gemfile`.
+
+### TextMate shell variables
+
+In addition to the standard TextMate shell variables, the RSpec
+TextMate bundle supports the following:
+
+#### TM\_RSPEC\_FORMATTER
+
+Set a custom formatter other than RSpec's TextMate formatter. Use
+the full classname, e.g. `'Spec::Core::Formatters::WebKit'`
+
+#### TM\_RSPEC\_OPTS
+
+Use this to set RSpec options just as you would in an `.rspec`
+file.
+
+#### TM\_RSPEC\_HOME
+
+If you're hacking on rspec yourself, point this to the
+`rspec-core` project directory for rspec-2, or the `rspec`
 directory for rspec-1.
 
 ## RVM Integration
