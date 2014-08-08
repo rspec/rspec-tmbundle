@@ -1,120 +1,76 @@
 # RSpec TextMate Bundle
 
+This bundle works with **TextMate 2** and **RSpec 2 and 3**. For TextMate 1 and/or RSpec 1 please use the legacy version from the branch “rspec1-textmate1”.
+
 ## Installation
 
-    mkdir -p ~/Library/Application\ Support/TextMate/Pristine\ Copy/Bundles
-    cd ~/Library/Application\ Support/TextMate/Pristine\ Copy/Bundles
-    git clone git://github.com/rspec/rspec-tmbundle.git RSpec.tmbundle
-    osascript -e 'tell app "TextMate" to reload bundles'
+Open up TextMate’s preferences, go to “Bundles” and make sure “RSpec” is checked.
 
-## Support for both RSpec-1 and RSpec-2
+## Running RSpec examples
 
-This `RSpec.tmbundle` works with both rspec-1 and rspec-2. Given
-that they work differently, the `RSpec.tmbundle` tries its best to
-figure out which one you're using in each project when you try to
-run RSpec examples. There are two separate parts to this process,
-and you have some control over how each one works.
+__Summary:__ If your project has a binstub (`bin/rspec`), make sure you’ve customized TextMate’s `$PATH` to play nicely with your Ruby version manager ([rbenv](https://github.com/sstephenson/rbenv), [rvm](http://rvm.io/), …). If it has a `Gemfile`, the same goes for `$TM_RUBY`. If you’re using the Ruby bundled with Mac OS, you shouldn’t need to customize anything.
 
-### LOAD_PATH
+Now here come the gritty details. There are two ways the bundle can run RSpec:
 
-The `RSpec.tmbundle` prepares the `LOAD_PATH` as follows:
+### Running RSpec via binstub
 
-1. If a `Gemfile` is present, `Bundler` is used to prepare the
-Load Path with `requires 'bundler'` and then `Bundler.setup` is
-executed. (This can be overridden - see below).
+If `bin/rspec` is present, the bundle uses that to run RSpec (great for projects using [Bundler binstubs](http://bundler.io/v1.6/man/bundle-exec.1.html#BUNDLE-INSTALL-BINSTUBS) or [Spring](https://github.com/rails/spring)). The binstub is run via a subshell. This shell inherits it’s `$PATH` from TextMate (init scripts like `.bashrc` are _not_ run), so make sure this is set to work correctly with rbenv, rvm or whatever you’re using. See [Defining a $PATH](http://blog.macromates.com/2014/defining-a-path/) in the TextMate blog for details and caveats.
 
-2. If `Bundler` isn't being used, `vendor/plugins` and
-`vendor/gems` are searched for `rspec`. If `rspec` is found, then
-it's `lib` directory is added to `LOAD_PATH`.
+### Running RSpec from Ruby
 
-### RSpec-version
+If no binstub is present, the bundle commands (which are Ruby scripts) run RSpec examples directly from their Ruby process. The important thing to consider here is the version of Ruby used for running the examples: 
 
-Once the `LOAD_PATH` is prepared, `RSpec-tmbundle` tries to
-determine which version of RSpec to use as follows:
+The bundle commands start ruby via `${TM_RUBY:-ruby} …`, this means: 
 
-1. `RSpec-tmbundle` checks for an `./rspec-tm` file in the
-project's root directory. If that file is exists, then
-`RSpec-tmbundle` attempts to set the RSpec version from the
-configuration found there.
+1. If `$TM_RUBY` is set, that is used. (Can be set via Preferences → Variables.)
+2. Otherwise, search `$PATH` for an executable named `ruby` and use that. This will most probably result in using the Ruby version bundled with Mac OS, unless you manually customize `$PATH` (again, see [Defining a $PATH](http://blog.macromates.com/2014/defining-a-path/) for details and caveats.)
 
-To configure the version using this method add a file named
-`.rspec-tm` to the project's root directory containing:
+The bundle then tries to determine which version of RSpec to use. Again, there are two options:
 
-    --rspec-version 2.0.0
+1. If a `Gemfile` is present, the RSpec version from `Gemfile.lock` is used (via Bundler).
+2. If no `Gemfile` is present, the bundle searches `vendor/plugins` and `vendor/gems` for a vendored version of RSpec:
+    1. If a vendored version is found, it is used.
+    2. If no vendored version is found, the bundle just tries to require RSpec directly. This means that RSpec must be available in Ruby’s `LOAD_PATH`. If you’re using Ruby 1.9 or newer this usually means that the most recent RSpec version installed via rubygems will get used.
 
-or whichever version you are using. 
+If your `Gemfile` is located at a non-standard location, you can add `--bundler` to a file named `.rspec-tm` in your project’s root directory to force the RSpec bundle to use Bundler (you’ll need to make sure `BUNDLER_GEMFILE` is set, otherwise Bundler won’t find the Gemfile, too). 
 
-This is the one foolproof way to ensure that the right version is
-invoked, but you don't really need to do this in most cases.
 
-2. If no version is configured, `RSpec-tmbundle` searches for
-`rspec` in the `vendor/gems` and the `vendor/plugins` directories.
-If `rspec` is found, `RSpec-tmbundle` determines the version to
-use based on the files present there.
+## Configuration
 
-3. If no version is configured and no rspec directory could be
-found in vendor, then `RSpec-tmbundle` attempts to run rspec-2
-with:
-
-    require 'rspec/core'
-
-If that raises an exception, `RSpec-tmbundle` makes a final
-attempt by trying to run rspec-1 with:
-
-    require 'spec/autorun'
-
-### Which Approach Should I Use?
-
-The effectiveness of each approach is partially dependent on how
-you manage your gem environment. The simplest (and suggested)
-approach is to first just see if it just works, and if not, then
-configure the version you want in the `.rspec-tm` file.
-
-## Rubygems
-
-The RSpec TextMate bundle does not `require "rubygems"` so that
-users who choose other packaging mechanisms can still use it. If
-you _are_ using Rubygems as your package manager, then the
-simplest thing to do is
-
-* open the TextMate Preferences
-* go to the `Advanced` tab
-* add a variable named `RUBYOPT` with the value `rubygems`
-
-## Options
+### Options
 
 You can set the following options in an `.rspec-tm` file in the
 root directory of your project:
 
-### --rspec-version
+#### --rspec-version
 
 see RSpec-version, above.
 
-### --bundler
+#### --bundler
 
 Use `Bundler`, even if there is no `Gemfile` (in which case you
 should have the `BUNDLER_GEMFILE` environment variable set).
 
-### --skip-bundler
+#### --skip-bundler
 
 Don't use `Bundler`, even if there is a `Gemfile`.
 
-## TextMate shell variables
+### TextMate shell variables
 
 In addition to the standard TextMate shell variables, the RSpec
 TextMate bundle supports the following:
 
-### TM_RSPEC_FORMATTER
+#### TM\_RSPEC\_FORMATTER
 
 Set a custom formatter other than RSpec's TextMate formatter. Use
 the full classname, e.g. `'Spec::Core::Formatters::WebKit'`
 
-### TM_RSPEC_OPTS
+#### TM\_RSPEC\_OPTS
 
 Use this to set RSpec options just as you would in an `.rspec`
 file.
 
-### TM_RSPEC_HOME
+#### TM\_RSPEC\_HOME
 
 If you're hacking on rspec yourself, point this to the
 `rspec-core` project directory for rspec-2, or the `rspec`
