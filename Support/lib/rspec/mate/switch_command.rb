@@ -183,7 +183,7 @@ SPEC
       end
 
       def write_and_open(path, content)
-        `mkdir -p "#{File.dirname(path)}"`
+        system 'mkdir', '-p', File.dirname(path)
         relative_path = path[ENV['TM_PROJECT_DIRECTORY'].size..-1]
         camelize = lambda {|part| part.gsub(/_([a-z])/){$1.upcase}.gsub(/^([a-z])/){$1.upcase}}
         described = Array(File.dirname(relative_path).split('/')[3..-1]).map(&camelize)
@@ -193,7 +193,7 @@ SPEC
         File.open(path, 'w') do |f|
           f.write "require 'spec_helper'\n\ndescribe #{described} do\n  \nend\n"
         end
-        `"$TM_SUPPORT_PATH/bin/mate" "#{path}" -l4:3`
+        system ENV['TM_SUPPORT_PATH']+'/bin/mate', path, '-l4:3'
       end
     end
   end
