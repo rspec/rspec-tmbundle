@@ -220,6 +220,25 @@ EXPECTED
           SwitchCommand.new.content_for('view', "spec/views/mookies/index.html.erb_spec.rb").should == ""
         end
       end
+
+      describe '#described_class_for' do
+        base = '/Users/foo/Code/bar'
+        {
+          # normal project
+          '/Users/foo/Code/bar/lib/some_name.rb' => 'SomeName',
+          '/Users/foo/Code/bar/lib/some/long_file_name.rb' => 'Some::LongFileName',
+          '/Users/foo/Code/bar/lib/my/own/file.rb' => 'My::Own::File',
+
+          # rails
+          '/Users/foo/Code/bar/app/controllers/file_controller.rb' => 'FileController',
+          '/Users/foo/Code/bar/app/models/my/own/file.rb' => 'My::Own::File',
+          '/Users/foo/Code/bar/app/other/my/own/file.rb' => 'My::Own::File',
+        }.each_pair do |path, class_name|
+          it "extracts the full class name from the path (#{class_name})" do
+            expect(subject.described_class_for(path, base)).to eq(class_name)
+          end
+        end
+      end
     end
   end
 end
