@@ -1,14 +1,12 @@
 require 'stringio'
 require 'cgi'
+require 'shellwords'
 
 module RSpec
   module Mate
     class Runner
       def run_files(stdout, options={})
-        files = ENV['TM_SELECTED_FILES'].scan(/'(.*?)'/).flatten.map do |path|
-          File.expand_path(path)
-        end
-
+        files = Shellwords.shellwords(ENV['TM_SELECTED_FILES'])
         options.merge!({:files => files})
         run(stdout, options)
       end
