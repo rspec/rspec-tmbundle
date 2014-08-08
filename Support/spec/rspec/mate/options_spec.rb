@@ -20,13 +20,6 @@ describe RSpec::Mate::Options do
   end
 
   context "with a file" do
-    context "with --rspec-version" do
-      it "contains the rspec version" do
-        stub_file_with ['--rspec-version 1.3.1']
-        options['--rspec-version'].should eq('1.3.1')
-      end
-    end
-
     context "with --bundler" do
       it "contains bundler true" do
         stub_file_with ['--bundler']

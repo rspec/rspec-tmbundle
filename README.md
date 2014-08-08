@@ -42,10 +42,6 @@ If your `Gemfile` is located at a non-standard location, you can add `--bundler`
 You can set the following options in an `.rspec-tm` file in the
 root directory of your project:
 
-#### --rspec-version
-
-see RSpec-version, above.
-
 #### --bundler
 
 Use `Bundler`, even if there is no `Gemfile` (in which case you
