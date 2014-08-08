@@ -25,6 +25,10 @@ module RSpec
         run(stdout, options)
       end
 
+      def run_again(stdout)
+        run(stdout, :run_again => true)
+      end
+      
       def run_focussed(stdout, options={})
         options.merge!(
           {
@@ -41,8 +45,12 @@ module RSpec
         old_stderr = $stderr
         $stderr    = stderr
 
-        argv = build_argv_from_options(options)
-        save_as_last_run(argv)
+        if options.delete(:run_again)
+          argv = load_argv_from_last_run
+        else
+          argv = build_argv_from_options(options)
+          save_as_last_run(argv)
+        end
 
         Dir.chdir(project_directory) do
           if use_binstub?
@@ -125,6 +133,10 @@ module RSpec
         File.open(LAST_RUN_CACHE, "w") do |f|
           f.write YAML.dump(args)
         end
+      end
+
+      def load_argv_from_last_run
+        YAML.load_file(LAST_RUN_CACHE)
       end
 
       def project_directory
