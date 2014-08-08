@@ -16,11 +16,6 @@ module RSpec
         run(stdout, options)
       end
 
-      def run_last_remembered_file(stdout, options={})
-        options.merge!({:files => [last_remembered_single_file]})
-        run(stdout, options)
-      end
-
       def run_focussed(stdout, options={})
         options.merge!(
           {
@@ -92,26 +87,8 @@ module RSpec
         $stderr = old_stderr
       end
 
-      def save_as_last_remembered_file(file)
-        File.open(last_remembered_file_cache, "w") do |f|
-          f << file
-        end
-      end
-
-      def last_remembered_file_cache
-        "/tmp/textmate_rspec_last_remembered_file_cache.txt"
-      end
-
 
     private
-
-      def last_remembered_single_file
-        file = File.read(last_remembered_file_cache).strip
-
-        if file.size > 0
-          File.expand_path(file)
-        end
-      end
 
       def project_directory
         File.expand_path(ENV['TM_PROJECT_DIRECTORY']) rescue File.dirname(single_file)
