@@ -83,7 +83,7 @@ describe RSpec::Mate::Runner do
       html.should =~ /should pass too/
     end
 
-    # This spec is necessary because RSpec 3 uses a different codepath in 
+    # This spec is necessary because RSpec 3 uses a different codepath in
     # RSpec::Core::Runner#run when setting up `argv`.
     it "works for RSpec3" do
       ENV['TM_SELECTED_FILES'] = "/foo.spec /bar.spec"
@@ -93,7 +93,7 @@ describe RSpec::Mate::Runner do
       RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
         # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
         # See https://github.com/rspec/rspec-mocks/issues/203
-        received_argv = argv 
+        received_argv = argv
       end
       @spec_mate.run_files(@test_runner_io)
       received_argv[0..1].should eq ["/foo.spec", "/bar.spec"]
@@ -157,7 +157,7 @@ describe RSpec::Mate::Runner do
       RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
         # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
         # See https://github.com/rspec/rspec-mocks/issues/203
-        received_argv = argv 
+        received_argv = argv
       end
       @spec_mate.run_focussed(@test_runner_io)
       received_argv.should_not include("--line")

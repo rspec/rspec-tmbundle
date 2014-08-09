@@ -183,13 +183,29 @@ SPEC
       end
 
       def write_and_open(path, content)
-        `mkdir -p "#{File.dirname(path)}"`
+        system 'mkdir', '-p', File.dirname(path)
+        described = described_class_for(path, ENV['TM_PROJECT_DIRECTORY'])
         File.open(path, 'w') do |f|
-          f.write "# -*- encoding : utf-8 -*-
-require 'spec_helper'"
+          f.puts "require 'spec_helper'"
+          f.puts ''
+          f.puts "describe #{described} do"
+          f.puts '  ' # <= caret will be here
+          f.puts 'end'
         end
-        `"$TM_SUPPORT_PATH/bin/mate" "#{path}"`
+        system ENV['TM_SUPPORT_PATH']+'/bin/mate', path, '-l4:3'
+      end
+
+      def described_class_for(path, base_path)
+        relative_path = path[base_path.size..-1]
+        camelize = lambda {|part| part.gsub(/_([a-z])/){$1.upcase}.gsub(/^([a-z])/){$1.upcase}}
+        parts = File.dirname(relative_path).split('/').compact.reject(&:empty?)
+        parts.shift if parts.first == 'app'
+        described = Array(parts[1..-1]).map(&camelize)
+        described << camelize.call(File.basename(path, '_spec.rb').split('.').first)
+        described = described.compact.reject(&:empty?).join('::')
+        described
       end
     end
+
   end
 end
