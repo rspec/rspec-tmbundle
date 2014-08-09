@@ -188,7 +188,7 @@ SPEC
         File.open(path, 'w') do |f|
           f.puts "require 'spec_helper'"
           f.puts ''
-          f.puts 'describe #{described} do'
+          f.puts "describe #{described} do"
           f.puts '  ' # <= caret will be here
           f.puts 'end'
         end
