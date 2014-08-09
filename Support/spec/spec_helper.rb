@@ -21,5 +21,9 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = 'random'
+
+  # Makes runner specs go forever with certain seeds (e.g. --seed 6871),
+  # disabled until the runner will run specs in a subshell. Ref:
+  # https://github.com/elia/rspec.tmbundle/commit/92bd792d813f79ffec8484469aa9ce3c7872382b#commitcomment-7325726
+  # config.order = 'random'
 end
