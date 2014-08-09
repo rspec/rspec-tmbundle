@@ -1,3 +1,5 @@
+require "fileutils"
+
 module RSpec
   module Mate
     # This is based on Ruy Asan's initial code:
@@ -183,7 +185,7 @@ SPEC
       end
 
       def write_and_open(path, content)
-        system 'mkdir', '-p', File.dirname(path)
+        FileUtils.mkdir_p(File.dirname(path))
         described = described_class_for(path, ENV['TM_PROJECT_DIRECTORY'])
         File.open(path, 'w') do |f|
           f.puts "require 'spec_helper'"
