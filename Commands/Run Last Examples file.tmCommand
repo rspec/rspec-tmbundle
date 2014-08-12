@@ -24,8 +24,6 @@ ${TM_RUBY:-ruby} /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-c
 	<string>none</string>
 	<key>inputFormat</key>
 	<string>text</string>
-	<key>keyEquivalent</key>
-	<string>~@r</string>
 	<key>name</key>
 	<string>Run Last Examples file</string>
 	<key>outputCaret</key>
