@@ -11,7 +11,7 @@ module RSpec
             path, line, rest = $1, $2, $3
             url = "txmt://open?url=file://#{CGI::escape(File.expand_path(path))}&line=#{$2}"
             link_text = "#{path}:#{line}"
-            "<a href='#{CGI::h(url)}'>#{CGI::h(link_text)}</a>:#{CGI.h(rest)}"
+            "<a href='#{CGI.escape_html(url)}'>#{CGI.escape_html(link_text)}</a>:#{CGI.escape_html(rest)}"
           end
         end
         
