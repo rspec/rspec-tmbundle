@@ -112,17 +112,6 @@ describe RSpec::Mate::Runner do
     end
   end
 
-  describe "#run_last_remembered_file" do
-    it "runs all of the selected files" do
-      @spec_mate.save_as_last_remembered_file fixtures_path('example_failing_spec.rb')
-      @spec_mate.run_last_remembered_file(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
-
-      html.should =~ @first_failing_spec
-    end
-  end
-
   describe "#run_focused" do
     it "runs first spec when file and line 4 specified" do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
