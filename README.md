@@ -8,7 +8,20 @@ Open up TextMate’s preferences, go to “Bundles” and make sure “RSpec” 
 
 ## Running RSpec examples
 
-__Summary:__ If your project has a binstub (`bin/rspec`), make sure you’ve customized TextMate’s `$PATH` to play nicely with your Ruby version manager ([rbenv](https://github.com/sstephenson/rbenv), [rvm](http://rvm.io/), …). If it has a `Gemfile`, the same goes for `$TM_RUBY`. If you’re using the Ruby bundled with Mac OS, you shouldn’t need to customize anything.
+Commands for running examples:
+
+ * __Run Examples__ <kbd>⌘R</kbd>: Run all examples in the current spec file.
+ * __Run Single Example__ <kbd>⇧⌘R</kbd>: Run the example on the current line (also works for example groups).
+ * __Run Examples in Selected Files/Directories__ <kbd>⌥⇧⌘R</kbd>: Run all examples from the files / directories selected in the file browser. If nothing is selected, run all examples in `spec/`. Hint: <kbd>⇧⌘A ⌥⇧⌘R</kbd> is a quick way to run all specs (<kbd>⇧⌘A</kbd> deselects everything in the file browser).
+ * __Run Again__ <kbd>⌥⌘R</kbd>: Repeat the last run command (can be example file, single example or examples in selected files).
+ 
+If your project has an `.rspec` file in its root, the last two commands – “Run Examples in Selected Files/Directories” and “Run Again” – are available everywhere in your project (even in files that not using the “RSpec” mode).
+ 
+## Configuring TextMate for running examples
+
+Using the bundle to run commands means that RSpec is run from a TextMate subprocess. Some caveats apply:
+
+__TL;DR:__ If your project has a binstub (`bin/rspec`), make sure you’ve customized TextMate’s `$PATH` to play nicely with your Ruby version manager ([rbenv](https://github.com/sstephenson/rbenv), [rvm](http://rvm.io/), …). If it has a `Gemfile`, the same goes for `$TM_RUBY`. If you’re using the Ruby bundled with Mac OS (not recommended), you shouldn’t need to customize anything.
 
 Now here come the gritty details. There are two ways the bundle can run RSpec:
 
