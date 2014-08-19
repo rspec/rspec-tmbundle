@@ -1,10 +1,14 @@
 require 'stringio'
 require 'cgi'
 require 'shellwords'
+require 'yaml'
 
 module RSpec
   module Mate
     class Runner
+      LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt"
+      LAST_RUN_CACHE             = "/tmp/textmate_rspec_last_run.yml"
+      
       def run_files(stdout, options={})
         files = ENV['TM_SELECTED_FILES'] ? Shellwords.shellwords(ENV['TM_SELECTED_FILES']) : ["spec/"]
         options.merge!({:files => files})
@@ -21,6 +25,10 @@ module RSpec
         run(stdout, options)
       end
 
+      def run_again(stdout)
+        run(stdout, :run_again => true)
+      end
+      
       def run_focussed(stdout, options={})
         options.merge!(
           {
@@ -36,27 +44,12 @@ module RSpec
         stderr     = StringIO.new
         old_stderr = $stderr
         $stderr    = stderr
-        default_formatter = rspec3? ? 'RSpec::Mate::Formatters::TextMateFormatter' : 'textmate'
-        formatter  = ENV['TM_RSPEC_FORMATTER'] || default_formatter
 
-        if rspec3?
-          # If :line is given, only the first file from :files is used. This should be ok though, because
-          # :line is only ever set in #run_focussed, and there :files is always set to a single file only.
-          argv = options[:line] ? ["#{options[:files].first}:#{options[:line]}"] : options[:files].dup
+        if options.delete(:run_again)
+          argv = load_argv_from_last_run
         else
-          argv = options[:files].dup
-          if options[:line]
-            argv << '--line'
-            argv << options[:line]
-          end
-        end
-
-        argv << '--format' << formatter
-        argv << '-r' << File.join(File.dirname(__FILE__), 'text_mate_formatter') if formatter == 'RSpec::Mate::Formatters::TextMateFormatter'
-        argv << '-r' << File.join(File.dirname(__FILE__), 'filter_bundle_backtrace')
-
-        if ENV['TM_RSPEC_OPTS']
-          argv += ENV['TM_RSPEC_OPTS'].split(" ")
+          argv = build_argv_from_options(options)
+          save_as_last_run(argv)
         end
 
         Dir.chdir(project_directory) do
@@ -93,24 +86,57 @@ module RSpec
       end
 
       def save_as_last_remembered_file(file)
-        File.open(last_remembered_file_cache, "w") do |f|
+        File.open(LAST_REMEMBERED_FILE_CACHE, "w") do |f|
           f << file
         end
-      end
-
-      def last_remembered_file_cache
-        "/tmp/textmate_rspec_last_remembered_file_cache.txt"
       end
 
 
     private
 
+      def build_argv_from_options(options)
+        default_formatter = rspec3? ? 'RSpec::Mate::Formatters::TextMateFormatter' : 'textmate'
+        formatter  = ENV['TM_RSPEC_FORMATTER'] || default_formatter
+
+        if rspec3?
+          # If :line is given, only the first file from :files is used. This should be ok though, because
+          # :line is only ever set in #run_focussed, and there :files is always set to a single file only.
+          argv = options[:line] ? ["#{options[:files].first}:#{options[:line]}"] : options[:files].dup
+        else
+          argv = options[:files].dup
+          if options[:line]
+            argv << '--line'
+            argv << options[:line]
+          end
+        end
+
+        argv << '--format' << formatter
+        argv << '-r' << File.join(File.dirname(__FILE__), 'text_mate_formatter') if formatter == 'RSpec::Mate::Formatters::TextMateFormatter'
+        argv << '-r' << File.join(File.dirname(__FILE__), 'filter_bundle_backtrace')
+
+        if ENV['TM_RSPEC_OPTS']
+          argv += ENV['TM_RSPEC_OPTS'].split(" ")
+        end
+        
+        argv
+      end
+      
       def last_remembered_single_file
-        file = File.read(last_remembered_file_cache).strip
+        file = File.read(LAST_REMEMBERED_FILE_CACHE).strip
 
         if file.size > 0
           File.expand_path(file)
         end
+      end
+
+      def save_as_last_run(args)
+        File.open(LAST_RUN_CACHE, "w") do |f|
+          f.write YAML.dump(args)
+        end
+      end
+
+      def load_argv_from_last_run
+        YAML.load_file(LAST_RUN_CACHE)
       end
 
       def project_directory

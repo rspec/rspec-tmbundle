@@ -12,20 +12,20 @@
 cat &lt;&lt;'RUBYEOF' &gt; /tmp/textmate-command-$$.rb
 
 require ENV['TM_BUNDLE_SUPPORT'] + "/lib/rspec/mate"
-RSpec::Mate::Runner.new.run_last_remembered_file STDOUT
+RSpec::Mate::Runner.new.run_again STDOUT
 
 RUBYEOF
 
 ${TM_RUBY:-ruby} /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-command-$$.rb; exit $exit_status
 </string>
-	<key>fallbackInput</key>
-	<string>document</string>
 	<key>input</key>
 	<string>none</string>
 	<key>inputFormat</key>
 	<string>text</string>
+	<key>keyEquivalent</key>
+	<string>~@r</string>
 	<key>name</key>
-	<string>Run Last Examples file</string>
+	<string>Run Again</string>
 	<key>outputCaret</key>
 	<string>afterOutput</string>
 	<key>outputFormat</key>
@@ -33,9 +33,9 @@ ${TM_RUBY:-ruby} /tmp/textmate-command-$$.rb; exit_status=$?; rm /tmp/textmate-c
 	<key>outputLocation</key>
 	<string>newWindow</string>
 	<key>scope</key>
-	<string>source.ruby.rspec</string>
+	<string>attr.test.rspec</string>
 	<key>uuid</key>
-	<string>1C172C2C-8785-40FC-B03E-7FF56AC0B266</string>
+	<string>CB648A00-9F6C-4D9B-BB43-DADB40DE4C8E</string>
 	<key>version</key>
 	<integer>2</integer>
 </dict>
