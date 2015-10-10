@@ -2,6 +2,7 @@ require 'cgi'
 require 'rspec/core/formatters/base_text_formatter'
 require_relative 'text_mate_backtrace_printer'
 require_relative 'snippet_extractor'
+require_relative 'gutter_marks'
 
 # This formatter is only used for RSpec 3 (older RSpec versions ship their own TextMateFormatter).
 # Based on https://github.com/rspec/rspec-core/blob/2cc12cefece83918b2e0737f43a72be52f195a16/lib/rspec/core/formatters/html_formatter.rb
@@ -111,6 +112,7 @@ module RSpec
             summary.pending_count
           )
           @printer.flush
+          RSpec::Mate::GutterMarks.new(summary.examples).set_marks
         end
 
       private
