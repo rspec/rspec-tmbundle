@@ -1,6 +1,7 @@
 require 'stringio'
 require 'cgi'
 require 'shellwords'
+require 'open3'
 require 'yaml'
 
 module RSpec
@@ -41,38 +42,42 @@ module RSpec
       end
 
       def run(stdout, options)
-        stderr     = StringIO.new
-        old_stderr = $stderr
-        $stderr    = stderr
-
         if options.delete(:run_again)
           argv = load_argv_from_last_run
         else
           argv = build_argv_from_options(options)
           save_as_last_run(argv)
         end
+        run_rspec(argv, stdout)
+      end
+      
+      def run_rspec(argv, stdout)
+        stderr     = StringIO.new
+        old_stderr = $stderr
+        $stderr    = stderr
 
         Dir.chdir(project_directory) do
-          if use_binstub?
-             system 'bin/rspec', *argv
-          else
-            ::RSpec::Core::Runner.disable_autorun!
-            ::RSpec::Core::Runner.run(argv, stderr, stdout)
+          cmd = 
+            if use_binstub?
+              %w(bin/rspec) + argv
+            elsif gemfile?
+              %w(bundle exec rspec) + argv
+            else
+              %w(rspec) + argv
+            end
+          Open3.popen3(*cmd) do |i, out, err, thread|
+            stderr_thread = Thread.new do
+              while (line = err.gets) do
+                stderr.puts line
+              end
+            end
+            while (line = out.gets) do
+              stdout.puts line
+              stdout.flush
+            end
+            stderr_thread.join
           end
         end
-      rescue Exception => e
-        require 'pp'
-
-        stdout <<
-          "<h1>Uncaught Exception</h1>" <<
-          "<p>#{e.class}: #{e.message}</p>" <<
-          "<pre>" <<
-            CGI.escapeHTML(e.backtrace.join("\n  ")) <<
-          "</pre>" <<
-          "<h2>Options:</h2>" <<
-          "<pre>" <<
-            CGI.escapeHTML(PP.pp(options, '')) <<
-          "</pre>"
       ensure
         unless stderr.string == ""
           stdout <<
@@ -92,6 +97,30 @@ module RSpec
       end
 
 
+      def rspec_version
+        @rspec_version ||= begin
+          version = if gemfile?
+            specs = File.readlines(File.join(ENV['TM_PROJECT_DIRECTORY'], 'Gemfile.lock'))
+            # RegExp taken from https://github.com/bundler/bundler/blob/master/lib/bundler/lockfile_parser.rb
+            specs.detect{ |line| line.match(%r{^ {4}rspec-core(?: \(([^-]*)(?:-(.*))?\))?$}) } && $1 or raise "'rspec' not found in Gemfile.lock!"
+          elsif use_binstub?
+            Dir.chdir(ENV["TM_PROJECT_DIRECTORY"]) do
+              `bin/rspec --version`.chomp
+            end
+          else
+            Dir.chdir(ENV["TM_PROJECT_DIRECTORY"]) do
+              `rspec --version`.chomp
+            end
+          end
+          raise "Could not determine RSpec version." if version == ""
+          version
+        end
+      end
+
+      def rspec3?
+        rspec_version.split(".").first.to_i >= 3
+      end
+      
     private
 
       def build_argv_from_options(options)

@@ -32,17 +32,6 @@ describe RSpec::Mate::Runner do
   end
 
   describe "#run" do
-    it "shows a nicely formatted error when there's an uncaught exception" do
-      ENV['TM_FILEPATH'] = fixtures_path('example_syntax_error_spec.rb')
-
-      @spec_mate.run_file(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
-
-      html.should =~ /Uncaught Exception/
-      html.should_not =~ /^  .%<.*$/
-    end
-
     it "shows standard error output nicely in a PRE block" do
       ENV['TM_FILEPATH'] = fixtures_path('example_stderr_spec.rb')
 
@@ -93,26 +82,18 @@ describe RSpec::Mate::Runner do
       ENV['TM_SELECTED_FILES'] = "/foo.spec /bar.spec"
 
       @spec_mate.stub(:rspec3? => true)
-      received_argv = nil
-      RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
-        # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
-        # See https://github.com/rspec/rspec-mocks/issues/203
-        received_argv = argv
+      @spec_mate.should_receive(:run_rspec) do |argv, stdout|
+        argv[0..1].should eq ["/foo.spec", "/bar.spec"]
       end
       @spec_mate.run_files(@test_runner_io)
-      received_argv[0..1].should eq ["/foo.spec", "/bar.spec"]
     end
 
     it 'runs all examples in "spec/" if nothing is selected' do
       ENV['TM_SELECTED_FILES'] = nil
-      received_argv = nil
-      RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
-        # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
-        # See https://github.com/rspec/rspec-mocks/issues/203
-        received_argv = argv
+      @spec_mate.should_receive(:run_rspec) do |argv, stdout|
+        argv[0].should eq "spec/"
       end
       @spec_mate.run_files(@test_runner_io)
-      received_argv[0].should eq "spec/"
     end
   end
 
@@ -131,12 +112,12 @@ describe RSpec::Mate::Runner do
     def self.it_works_for(method, &block)
       it "works for #{method}" do
         original_argv, rerun_argv = nil, nil
-        RSpec::Core::Runner.stub(:run) do |argv, stderr, stdout|
+        @spec_mate.stub(:run_rspec) do |argv, stdout|
           original_argv = argv.dup
         end
         instance_exec(&block)
         original_argv.should_not be_nil
-        RSpec::Core::Runner.stub(:run) do |argv, stderr, stdout|
+        @spec_mate.stub(:run_rspec) do |argv, stdout|
           rerun_argv = argv.dup
         end
         @spec_mate.run_again(@test_runner_io)
@@ -191,34 +172,11 @@ describe RSpec::Mate::Runner do
       ENV['TM_LINE_NUMBER'] = '8'
 
       @spec_mate.stub(:rspec3? => true)
-      received_argv = nil
-      RSpec::Core::Runner.should_receive(:run) do |argv, stderr, stdout|
-        # Can not set expectations on args in this block, because RSpec::Core::Runner#run has `rescue Exception`.
-        # See https://github.com/rspec/rspec-mocks/issues/203
-        received_argv = argv
+      @spec_mate.should_receive(:run_rspec) do |argv, stdout|
+        argv.should_not include("--line")
+        argv.should include("/path/to/spec.rb:8")
       end
       @spec_mate.run_focussed(@test_runner_io)
-      received_argv.should_not include("--line")
-      received_argv.should include("/path/to/spec.rb:8")
-    end
-  end
-
-  describe "error cases" do
-    it "raises an exception when TM_PROJECT_DIRECTORY points to bad location" do
-      ENV['TM_PROJECT_DIRECTORY'] = __FILE__ # bad on purpose
-
-      lambda do
-        # TODO: long path
-        load File.dirname(__FILE__) + '/../../../lib/rspec/mate.rb'
-      end.should_not raise_error
-    end
-
-    it "raises an exception when TM_RSPEC_HOME points to bad location" do
-      ENV['TM_RSPEC_HOME'] = __FILE__ # bad on purpose
-
-      lambda do
-        load File.dirname(__FILE__) + '/../lib/rspec_mate.rb'
-      end.should raise_error
     end
   end
 
@@ -236,25 +194,44 @@ describe RSpec::Mate::Runner do
     end
   end
 
+  describe '#rspec_version' do
+    context 'with Gemfile.lock' do
+      it 'extracts the version from Gemfile.lock' do
+        ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_gemfile")
+        expect(@spec_mate.rspec_version).to eq "2.12.2"
+      end
+    end
+    
+    context 'without Gemfile.lock' do
+      it 'gets the version from `bin/rspec --version`, if a binstub is present' do
+        ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_binstub")
+        expect(@spec_mate.rspec_version).to eq "2.99.1-fake"
+      end
+      
+      it 'gets the version from `rspec --version`, if no binstub is present' do
+        path_to_fake_rspec = File.join(fixtures_path("project_with_binstub"), "bin")
+        ENV["PATH"] = path_to_fake_rspec + ":" + ENV["PATH"]
+        ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("legacy_project")
+        expect(@spec_mate.rspec_version).to eq "2.99.1-fake"
+      end
+    end
+  end
 
 private
 
-  def fixtures_path(fixture)
+  def fixtures_path(fixture_file = nil)
     # TODO: long path
     fixtures_path = File.expand_path(
       File.dirname(__FILE__)
     ) + '/../../../fixtures'
 
-    File.join(fixtures_path, fixture)
+    File.expand_path(fixture_file ? File.join(fixtures_path, fixture_file) : fixtures_path)
   end
 
   def set_env
-    # TODO: long path
-    root = File.expand_path('../../../../../../rspec-core', __FILE__)
-
     ENV['TM_FILEPATH']          = nil
     ENV['TM_LINE_NUMBER']       = nil
-    ENV['TM_PROJECT_DIRECTORY'] = File.expand_path(File.dirname(__FILE__))
-    ENV['TM_RSPEC_HOME']        = "#{root}"
+    ENV['TM_PROJECT_DIRECTORY'] = File.expand_path("../../../../", __FILE__)
   end
+  
 end
