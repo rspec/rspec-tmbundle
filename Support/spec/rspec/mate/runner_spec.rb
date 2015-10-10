@@ -5,8 +5,8 @@ require 'shellwords'
 describe RSpec::Mate::Runner do
   before(:each) do
     # TODO: long path
-    @first_failing_spec  = /fixtures\/example_failing_spec\.rb&line=3/n
-    @second_failing_spec = /fixtures\/example_failing_spec\.rb&line=7/n
+    @first_failing_spec  = /fixtures\/example_failing_spec\.rb:3/n
+    @second_failing_spec = /fixtures\/example_failing_spec\.rb:7/n
 
     set_env
 
@@ -39,7 +39,7 @@ describe RSpec::Mate::Runner do
       @test_runner_io.rewind
       html = @test_runner_io.read
 
-      html.should =~ /#{Regexp.escape("<h2>stderr:</h2><pre>2 + 2 = 4\n4 &lt; 8\n</pre>")}/
+      expect(html).to match /#{Regexp.escape("<h2>stderr:</h2><pre>2 + 2 = 4\n4 &lt; 8\n</pre>")}/
     end
   end
 
@@ -51,8 +51,8 @@ describe RSpec::Mate::Runner do
       @test_runner_io.rewind
       html = @test_runner_io.read
 
-      html.should =~ @first_failing_spec
-      html.should =~ @second_failing_spec
+      expect(html).to match @first_failing_spec
+      expect(html).to match @second_failing_spec
     end
   end
 
@@ -70,28 +70,16 @@ describe RSpec::Mate::Runner do
       @test_runner_io.rewind
       html = @test_runner_io.read
 
-      html.should =~ @first_failing_spec
-      html.should =~ @second_failing_spec
-      html.should =~ /should pass/
-      html.should =~ /should pass too/
-    end
-
-    # This spec is necessary because RSpec 3 uses a different codepath in
-    # RSpec::Core::Runner#run when setting up `argv`.
-    it "works for RSpec3" do
-      ENV['TM_SELECTED_FILES'] = "/foo.spec /bar.spec"
-
-      @spec_mate.stub(:rspec3? => true)
-      @spec_mate.should_receive(:run_rspec) do |argv, stdout|
-        argv[0..1].should eq ["/foo.spec", "/bar.spec"]
-      end
-      @spec_mate.run_files(@test_runner_io)
+      expect(html).to match @first_failing_spec
+      expect(html).to match @second_failing_spec
+      expect(html).to match /should pass/
+      expect(html).to match /should pass too/
     end
 
     it 'runs all examples in "spec/" if nothing is selected' do
       ENV['TM_SELECTED_FILES'] = nil
-      @spec_mate.should_receive(:run_rspec) do |argv, stdout|
-        argv[0].should eq "spec/"
+      expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
+        expect(argv[0]).to eq "spec/"
       end
       @spec_mate.run_files(@test_runner_io)
     end
@@ -104,7 +92,7 @@ describe RSpec::Mate::Runner do
       @test_runner_io.rewind
       html = @test_runner_io.read
 
-      html.should =~ @first_failing_spec
+      expect(html).to match @first_failing_spec
     end
   end
 
@@ -112,16 +100,16 @@ describe RSpec::Mate::Runner do
     def self.it_works_for(method, &block)
       it "works for #{method}" do
         original_argv, rerun_argv = nil, nil
-        @spec_mate.stub(:run_rspec) do |argv, stdout|
+        expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
           original_argv = argv.dup
         end
         instance_exec(&block)
-        original_argv.should_not be_nil
-        @spec_mate.stub(:run_rspec) do |argv, stdout|
+        expect(original_argv).to_not be_nil
+        expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
           rerun_argv = argv.dup
         end
         @spec_mate.run_again(@test_runner_io)
-        rerun_argv.should eq original_argv
+        expect(rerun_argv).to eq original_argv
       end
     end
     
@@ -151,8 +139,8 @@ describe RSpec::Mate::Runner do
       @test_runner_io.rewind
       html = @test_runner_io.read
 
-      html.should =~ @first_failing_spec
-      html.should_not =~ @second_failing_spec
+      expect(html).to match @first_failing_spec
+      expect(html).to_not match @second_failing_spec
     end
 
     it "runs second spec when file and line 8 specified" do
@@ -162,19 +150,18 @@ describe RSpec::Mate::Runner do
       @spec_mate.run_focussed(@test_runner_io)
       @test_runner_io.rewind
       html = @test_runner_io.read
-
-      html.should_not =~ @first_failing_spec
-      html.should =~ @second_failing_spec
+      expect(html).to_not match @first_failing_spec
+      expect(html).to match @second_failing_spec
     end
 
-    it "uses new syntax for RSpec 3" do
+    it "uses old syntax for RSpec 2" do
       ENV['TM_FILEPATH'] = "/path/to/spec.rb"
       ENV['TM_LINE_NUMBER'] = '8'
 
-      @spec_mate.stub(:rspec3? => true)
-      @spec_mate.should_receive(:run_rspec) do |argv, stdout|
-        argv.should_not include("--line")
-        argv.should include("/path/to/spec.rb:8")
+      allow(@spec_mate).to receive(:rspec3?).and_return false
+      expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
+        expect(argv).to include("/path/to/spec.rb")
+        expect(argv[1..2]).to eq ["--line", "8"]
       end
       @spec_mate.run_focussed(@test_runner_io)
     end
@@ -189,8 +176,8 @@ describe RSpec::Mate::Runner do
       @test_runner_io.rewind
       text = @test_runner_io.read
 
-      text.should =~ /1\) An example failing spec should fail/
-      text.should =~ /2\) An example failing spec should also fail/
+      expect(text).to match /1\) An example failing spec should fail/
+      expect(text).to match /2\) An example failing spec should also fail/
     end
   end
 
