@@ -19,6 +19,7 @@ describe RSpec::Mate::Runner do
     @first_failing_spec  = /fixtures\/example_failing_spec\.rb:3/n
     @second_failing_spec = /fixtures\/example_failing_spec\.rb:7/n
 
+    @original_env = ENV.to_hash
     set_env
 
     load File.expand_path(
@@ -34,7 +35,7 @@ describe RSpec::Mate::Runner do
   end
 
   after(:each) do
-    set_env
+    ENV.replace(@original_env)
 
     $".delete_if do |path|
       path =~ /example_failing_spec\.rb/
