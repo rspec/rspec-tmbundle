@@ -47,7 +47,7 @@ describe RSpec::Mate::Runner do
 
       html = capture{ @spec_mate.run_file }
 
-      expect(html).to match /#{Regexp.escape("<h2>stderr:</h2><pre>2 + 2 = 4\n4 &lt; 8\n</pre>")}/
+      expect(html).to match /#{Regexp.escape("<pre class='stderr'>2 + 2 = 4\n4 &lt; 8\n</pre>")}/
     end
   end
 

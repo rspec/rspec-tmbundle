@@ -81,8 +81,7 @@ module RSpec
       ensure
         unless stderr.string == ""
           $stdout <<
-            "<h2>stderr:</h2>" <<
-            "<pre>" <<
+            "<pre class='stderr'>" <<
               CGI.escapeHTML(stderr.string) <<
             "</pre>"
         end

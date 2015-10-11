@@ -331,6 +331,17 @@ dt.failed {
   color: #FFFFFF; background: #C40D0D;
 }
 
+pre {
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.stderr {
+  padding: 10px;
+  margin: 10px;
+  background: #ffffc4;
+  white-space: pre-wrap;
+}
 
 .backtrace {
   color: #000;
