@@ -141,6 +141,7 @@ module RSpec
         # could output links to images or other files produced during the specs.
         #
         def extra_failure_content(failure)
+          return unless failure.exception.backtrace
           backtrace = failure.exception.backtrace.map { |line| RSpec.configuration.backtrace_formatter.backtrace_line(line) }
           backtrace.compact!
           @snippet_extractor ||= SnippetExtractor.new
