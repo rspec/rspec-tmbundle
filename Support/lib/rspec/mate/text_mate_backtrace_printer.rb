@@ -81,11 +81,11 @@ module RSpec
         end
 
         def make_header_red
-          @output.puts "    <script type=\"text/javascript\">makeRed('rspec-header');</script>"
+          @output.puts "    <script type=\"text/javascript\">makeRed('rspec-progress');</script>"
         end
 
         def make_header_yellow
-          @output.puts "    <script type=\"text/javascript\">makeYellow('rspec-header');</script>"
+          @output.puts "    <script type=\"text/javascript\">makeYellow('rspec-progress');</script>"
         end
 
         def make_example_group_header_red(group_id)
@@ -115,8 +115,8 @@ module RSpec
 
         REPORT_HEADER = <<-EOF
 <div class="rspec-report">
-
 <div id="rspec-header">
+  <div id="rspec-progress-wrap"><div id="rspec-progress"></div></div>
   <div id="label">
     <h1>RSpec Code Examples</h1>
   </div>
@@ -150,7 +150,7 @@ function removeClass(element_id, classname) {
 }
 
 function moveProgressBar(percentDone) {
-  document.getElementById("rspec-header").style.width = percentDone +"%";
+  document.getElementById("rspec-progress").style.width = percentDone +"%";
 }
 
 function makeRed(element_id) {
@@ -216,7 +216,24 @@ EOF
 
         GLOBAL_STYLES = <<-EOF
 #rspec-header {
-  background: #65C400; color: #fff; height: 4em;
+  position: relative;
+  color: #fff; 
+  height: 4em;
+}
+
+#rspec-progress-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #ddd;
+  z-index: -1
+}
+#rspec-progress {
+  height: 100%;
+  background: #65C400;
+  width: 0;
 }
 
 .rspec-report h1 {
@@ -319,15 +336,15 @@ dt.failed {
 }
 
 
-#rspec-header.not_implemented {
+#rspec-progress.not_implemented {
   color: #000000; background: #FAF834;
 }
 
-#rspec-header.pending_fixed {
+#rspec-progress.pending_fixed {
   color: #FFFFFF; background: #C40D0D;
 }
 
-#rspec-header.failed {
+#rspec-progress.failed {
   color: #FFFFFF; background: #C40D0D;
 }
 
