@@ -3,6 +3,17 @@ require 'stringio'
 require 'shellwords'
 
 describe RSpec::Mate::Runner do
+  def capture
+    original_stdout = $stdout
+    tmp_stdout = StringIO.new
+    $stdout = tmp_stdout
+    yield
+    tmp_stdout.rewind
+    tmp_stdout.read
+  ensure
+    $stdout = original_stdout
+  end
+  
   before(:each) do
     # TODO: long path
     @first_failing_spec  = /fixtures\/example_failing_spec\.rb:3/n
@@ -20,7 +31,6 @@ describe RSpec::Mate::Runner do
     stub_const("RSpec::Mate::Runner::LAST_REMEMBERED_FILE_CACHE", "/tmp/textmate_rspec_last_remembered_file_cache.test.txt")
     
     @spec_mate = RSpec::Mate::Runner.new
-    @test_runner_io = StringIO.new
   end
 
   after(:each) do
@@ -35,9 +45,7 @@ describe RSpec::Mate::Runner do
     it "shows standard error output nicely in a PRE block" do
       ENV['TM_FILEPATH'] = fixtures_path('example_stderr_spec.rb')
 
-      @spec_mate.run_file(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
+      html = capture{ @spec_mate.run_file }
 
       expect(html).to match /#{Regexp.escape("<h2>stderr:</h2><pre>2 + 2 = 4\n4 &lt; 8\n</pre>")}/
     end
@@ -47,9 +55,7 @@ describe RSpec::Mate::Runner do
     it "runs whole file when only file specified" do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
 
-      @spec_mate.run_file(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
+      html = capture{ @spec_mate.run_file }
 
       expect(html).to match @first_failing_spec
       expect(html).to match @second_failing_spec
@@ -66,9 +72,7 @@ describe RSpec::Mate::Runner do
       # TODO: adjust fixtures_path to take an array
       ENV['TM_SELECTED_FILES'] = Shellwords.join(fixtures.map{ |fixture| fixtures_path(fixture) })
 
-      @spec_mate.run_files(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
+      html = capture{ @spec_mate.run_files }
 
       expect(html).to match @first_failing_spec
       expect(html).to match @second_failing_spec
@@ -78,19 +82,17 @@ describe RSpec::Mate::Runner do
 
     it 'runs all examples in "spec/" if nothing is selected' do
       ENV['TM_SELECTED_FILES'] = nil
-      expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
+      expect(@spec_mate).to receive(:run_rspec) do |argv|
         expect(argv[0]).to eq "spec/"
       end
-      @spec_mate.run_files(@test_runner_io)
+      @spec_mate.run_files
     end
   end
 
   describe "#run_last_remembered_file" do
     it "runs all of the selected files" do
       @spec_mate.save_as_last_remembered_file fixtures_path('example_failing_spec.rb')
-      @spec_mate.run_last_remembered_file(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
+      html = capture{ @spec_mate.run_last_remembered_file }
 
       expect(html).to match @first_failing_spec
     end
@@ -100,33 +102,33 @@ describe RSpec::Mate::Runner do
     def self.it_works_for(method, &block)
       it "works for #{method}" do
         original_argv, rerun_argv = nil, nil
-        expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
+        expect(@spec_mate).to receive(:run_rspec) do |argv|
           original_argv = argv.dup
         end
         instance_exec(&block)
         expect(original_argv).to_not be_nil
-        expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
+        expect(@spec_mate).to receive(:run_rspec) do |argv|
           rerun_argv = argv.dup
         end
-        @spec_mate.run_again(@test_runner_io)
+        @spec_mate.run_again
         expect(rerun_argv).to eq original_argv
       end
     end
     
     it_works_for '#run_file' do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
-      @spec_mate.run_file(@test_runner_io)
+      @spec_mate.run_file
     end
     
     it_works_for '#run_files' do
       ENV['TM_SELECTED_FILES'] = "foo/bar_spec.rb baz/baz/baz/baz_spec.rb"
-      @spec_mate.run_files(@test_runner_io)
+      @spec_mate.run_files
     end
     
     it_works_for '#run_focused' do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '4'
-      @spec_mate.run_focussed(@test_runner_io)
+      @spec_mate.run_focussed
     end
   end
 
@@ -135,9 +137,7 @@ describe RSpec::Mate::Runner do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '4'
 
-      @spec_mate.run_focussed(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
+      html = capture{ @spec_mate.run_focussed }
 
       expect(html).to match @first_failing_spec
       expect(html).to_not match @second_failing_spec
@@ -147,9 +147,8 @@ describe RSpec::Mate::Runner do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '8'
 
-      @spec_mate.run_focussed(@test_runner_io)
-      @test_runner_io.rewind
-      html = @test_runner_io.read
+      html = capture{ @spec_mate.run_focussed }
+
       expect(html).to_not match @first_failing_spec
       expect(html).to match @second_failing_spec
     end
@@ -159,11 +158,11 @@ describe RSpec::Mate::Runner do
       ENV['TM_LINE_NUMBER'] = '8'
 
       allow(@spec_mate).to receive(:rspec3?).and_return false
-      expect(@spec_mate).to receive(:run_rspec) do |argv, stdout|
+      expect(@spec_mate).to receive(:run_rspec) do |argv|
         expect(argv).to include("/path/to/spec.rb")
         expect(argv[1..2]).to eq ["--line", "8"]
       end
-      @spec_mate.run_focussed(@test_runner_io)
+      @spec_mate.run_focussed
     end
   end
 
@@ -172,9 +171,7 @@ describe RSpec::Mate::Runner do
       ENV['TM_RSPEC_FORMATTER'] = 'RSpec::Core::Formatters::BaseTextFormatter'
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
 
-      @spec_mate.run_file(@test_runner_io)
-      @test_runner_io.rewind
-      text = @test_runner_io.read
+      text = capture{ @spec_mate.run_file }
 
       expect(text).to match /1\) An example failing spec should fail/
       expect(text).to match /2\) An example failing spec should also fail/

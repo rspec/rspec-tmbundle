@@ -10,27 +10,27 @@ module RSpec
       LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt"
       LAST_RUN_CACHE             = "/tmp/textmate_rspec_last_run.yml"
       
-      def run_files(stdout, options={})
+      def run_files(options={})
         files = ENV['TM_SELECTED_FILES'] ? Shellwords.shellwords(ENV['TM_SELECTED_FILES']) : ["spec/"]
         options.merge!({:files => files})
-        run(stdout, options)
+        run(options)
       end
 
-      def run_file(stdout, options={})
+      def run_file(options={})
         options.merge!({:files => [single_file]})
-        run(stdout, options)
+        run(options)
       end
 
-      def run_last_remembered_file(stdout, options={})
+      def run_last_remembered_file(options={})
         options.merge!({:files => [last_remembered_single_file]})
-        run(stdout, options)
+        run(options)
       end
 
-      def run_again(stdout)
-        run(stdout, :run_again => true)
+      def run_again
+        run(:run_again => true)
       end
       
-      def run_focussed(stdout, options={})
+      def run_focussed(options={})
         options.merge!(
           {
             :files => [single_file],
@@ -38,20 +38,20 @@ module RSpec
           }
         )
 
-        run(stdout, options)
+        run(options)
       end
 
-      def run(stdout, options)
+      def run(options)
         if options.delete(:run_again)
           argv = load_argv_from_last_run
         else
           argv = build_argv_from_options(options)
           save_as_last_run(argv)
         end
-        run_rspec(argv, stdout)
+        run_rspec(argv)
       end
       
-      def run_rspec(argv, stdout)
+      def run_rspec(argv)
         stderr     = StringIO.new
         old_stderr = $stderr
         $stderr    = stderr
@@ -72,15 +72,15 @@ module RSpec
               end
             end
             while (line = out.gets) do
-              stdout.puts line
-              stdout.flush
+              $stdout.puts line
+              $stdout.flush
             end
             stderr_thread.join
           end
         end
       ensure
         unless stderr.string == ""
-          stdout <<
+          $stdout <<
             "<h2>stderr:</h2>" <<
             "<pre>" <<
               CGI.escapeHTML(stderr.string) <<
