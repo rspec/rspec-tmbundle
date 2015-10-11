@@ -11,7 +11,7 @@ module RSpec
   module Mate
     module Formatters
       class TextMateFormatter < ::RSpec::Core::Formatters::BaseFormatter
-        ::RSpec::Core::Formatters.register self, :start, :example_group_started, :start_dump,
+        ::RSpec::Core::Formatters.register self, :message, :start, :example_group_started, :start_dump,
                             :example_started, :example_passed, :example_failed,
                             :example_pending, :dump_summary
 
@@ -22,6 +22,10 @@ module RSpec
           @example_number = 0
           @header_red = nil
           @printer = TextMateBacktracePrinter.new(output)
+        end
+
+        def message(notification)
+          @printer.message notification.message
         end
 
         def start(notification)

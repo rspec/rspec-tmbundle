@@ -10,11 +10,26 @@ module RSpec
         include ERB::Util # for the #h method
         def initialize(output)
           @output = output
+          @html_output_started = false
+          @messages_before_start = []
+        end
+
+        def message(str)
+          str = str.strip
+          if @html_output_started
+            @output.puts "<script type='text/javascript'>addMessage('#{h str}')</script>"
+          else
+            @messages_before_start << str
+          end
         end
 
         def print_html_start
           @output.puts HTML_HEADER
           @output.puts REPORT_HEADER
+          @messages_before_start.each do |msg|
+            @output.puts "<script type='text/javascript'>addMessage('#{h msg}')</script>"
+          end
+          @html_output_started = true
         end
 
         def print_example_group_end
@@ -133,6 +148,7 @@ module RSpec
   </div>
 </div>
 
+<div id="messages"></div>
 
 <div class="results">
 EOF
@@ -147,6 +163,12 @@ function removeClass(element_id, classname) {
   var elem = document.getElementById(element_id);
   var classlist = elem.className.replace(classname,'');
   elem.className = classlist;
+}
+
+function addMessage(msg) {
+  var elem = document.getElementById("messages");
+  if (elem.className == '') elem.className = "messages";
+  elem.innerHTML += msg + "<br>";
 }
 
 function moveProgressBar(percentDone) {
@@ -351,6 +373,12 @@ dt.failed {
 pre {
   font-size: 12px;
   font-family: monospace;
+}
+
+.messages {
+  padding: 10px;
+  color: #666;
+  font: normal 11px "Lucida Grande", Helvetica, sans-serif;
 }
 
 .stderr {
