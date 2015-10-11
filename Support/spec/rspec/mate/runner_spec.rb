@@ -78,7 +78,7 @@ describe RSpec::Mate::Runner do
       expect(html).to match @first_failing_spec
       expect(html).to match @second_failing_spec
       expect(html).to match /should pass/
-      expect(html).to match /should pass too/
+      expect(html).to match /should pssass too/
     end
 
     it 'runs all examples in "spec/" if nothing is selected' do

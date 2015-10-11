@@ -11,7 +11,7 @@ module RSpec
   module Mate
     module Formatters
       class TextMateFormatter < ::RSpec::Core::Formatters::BaseFormatter
-        ::RSpec::Core::Formatters.register self, :message, :start, :example_group_started, :start_dump,
+        ::RSpec::Core::Formatters.register self, :message, :seed, :start, :example_group_started, :start_dump,
                             :example_started, :example_passed, :example_failed,
                             :example_pending, :dump_summary
 
@@ -26,6 +26,11 @@ module RSpec
 
         def message(notification)
           @printer.message notification.message
+        end
+
+        def seed(notification)
+          return unless notification.seed_used?
+          @printer.message notification.fully_formatted
         end
 
         def start(notification)
