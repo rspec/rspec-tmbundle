@@ -11,11 +11,14 @@ module RSpec
         def initialize(output)
           @output = output
           @html_output_started = false
+          @messages = []
           @messages_before_start = []
         end
 
         def message(str)
           str = str.strip
+          return if @messages.include?(str) # Avoid duplicate messages (e.g. seed notifications in RSpec 3.2)
+          @messages << str
           if @html_output_started
             @output.puts "<script type='text/javascript'>addMessage('#{h str}')</script>"
           else
