@@ -66,6 +66,7 @@ module RSpec
               %w(rspec) + argv
             end
           Open3.popen3(*cmd) do |i, out, err, thread|
+            i.close
             stderr_thread = Thread.new do
               while (line = err.gets) do
                 stderr.puts line
