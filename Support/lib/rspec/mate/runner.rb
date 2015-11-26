@@ -3,10 +3,12 @@ require 'cgi'
 require 'shellwords'
 require 'open3'
 require 'yaml'
+require_relative 'helpers'
 
 module RSpec
   module Mate
     class Runner
+      include Helpers
       LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt"
       LAST_RUN_CACHE             = "/tmp/textmate_rspec_last_run.yml"
       
@@ -100,15 +102,15 @@ module RSpec
       def rspec_version
         @rspec_version ||= begin
           version = if gemfile?
-            specs = File.readlines(File.join(ENV['TM_PROJECT_DIRECTORY'], 'Gemfile.lock'))
+            specs = File.readlines(File.join(base_dir, 'Gemfile.lock'))
             # RegExp taken from https://github.com/bundler/bundler/blob/master/lib/bundler/lockfile_parser.rb
             specs.detect{ |line| line.match(%r{^ {4}rspec-core(?: \(([^-]*)(?:-(.*))?\))?$}) } && $1 or raise "'rspec' not found in Gemfile.lock!"
           elsif use_binstub?
-            Dir.chdir(ENV["TM_PROJECT_DIRECTORY"]) do
+            Dir.chdir(base_dir) do
               `bin/rspec --version`.chomp
             end
           else
-            Dir.chdir(ENV["TM_PROJECT_DIRECTORY"]) do
+            Dir.chdir(base_dir) do
               `rspec --version`.chomp
             end
           end
@@ -178,7 +180,7 @@ module RSpec
       end
 
       def project_directory
-        File.expand_path(ENV['TM_PROJECT_DIRECTORY']) rescue File.dirname(single_file)
+        File.expand_path(base_dir) rescue File.dirname(single_file)
       end
 
       def single_file

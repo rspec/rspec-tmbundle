@@ -139,7 +139,7 @@ module RSpec
 
       def write_and_open(path)
         FileUtils.mkdir_p(File.dirname(path))
-        described = described_class_for(path, ENV['TM_PROJECT_DIRECTORY'])
+        described = described_class_for(path, base_dir)
         File.open(path, 'w') do |f|
           f.puts "require 'spec_helper'"
           f.puts ''

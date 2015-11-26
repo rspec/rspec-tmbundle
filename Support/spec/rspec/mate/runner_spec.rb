@@ -200,6 +200,21 @@ describe RSpec::Mate::Runner do
         expect(@spec_mate.rspec_version).to eq "2.99.1-fake"
       end
     end
+    
+    context 'when TM_RSPEC_BASEDIR is set' do
+      it 'looks there for the Gemfile.lock' do
+        ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_gemfile")
+        ENV["TM_RSPEC_BASEDIR"] = fixtures_path("project_with_gemfile") + "/subdir"
+        expect(@spec_mate.rspec_version).to eq "3.3.0"
+      end
+
+      it 'looks there for the binstub' do
+        ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_binstub")
+        ENV["TM_RSPEC_BASEDIR"] = fixtures_path("project_with_binstub") + "/subdir"
+        expect(@spec_mate.rspec_version).to eq "2.99.1-subdir-fake"
+      end
+    end
+    
   end
 
 private

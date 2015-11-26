@@ -1,8 +1,11 @@
 require "set"
+require_relative "helpers"
 
 module RSpec
   module Mate
     class GutterMarks
+      include Helpers
+      
       MARK = "warning"
       SpecError = Struct.new(:line, :message)
 
@@ -13,7 +16,7 @@ module RSpec
       end
 
       def set_marks
-        Dir.chdir(ENV['TM_PROJECT_DIRECTORY'] || ENV['TM_DIRECTORY']) do # Paths are relative to project directory
+        Dir.chdir(base_dir) do # Paths are relative to project directory
           errors_by_path.each do |path, errors|
             clear_marks_for(path)
             errors.each do |error|

@@ -27,11 +27,38 @@ The bundle runs RSpec in a subshell. The command to start RSpec is determined as
 
 Running RSpec / Ruby from a subshell means that TextMate must be configured to work with whatever Ruby version manager you're using ([rbenv](https://github.com/sstephenson/rbenv), [rvm](http://rvm.io/), …). Normally, this means customizing the `$PATH` variable. See [Defining a $PATH](http://blog.macromates.com/2014/defining-a-path/) in the TextMate blog for details and caveats.
 
+### Setting the base directory for running examples
+
+Per default, RSpec is run from the directory currently designated as “project folder” in TextMate. This can be overriden by setting `TM_RSPEC_BASEDIR`.
+
+It’s even possible to have different base directories for running RSpec in a single project. Take for example a Rails Engine with the following directory layout:
+
+```
+app/        # Rails app
+spec/       # examples for the Rails app
+my_engine/
+  app/      # Engine
+  spec/     # examples for the Engine
+```
+
+The examples for the Rails app should be run from the top-level directory, but the examples for the Engine should be run from `my_engine/`.
+
+To achieve this, create a file `my_engine/.tm_properties` with the following line:
+
+```
+TM_RSPEC_BASEDIR=$CWD
+```
+
+This makes sure that `TM_RSPEC_BASEDIR` is set to the full path of the `my_engine/` directory whenever you’re editing a file in this directory (or one of its subdirectories). So if you’re editing  `my_engine/spec/foo_spec.rb` and press <kbd>⌘R</kbd> to run the examples, they will be run from the `my_engine/` directory, while running examples in, say, `spec/bar_spec.rb` are still run from the top-level project directory.
 
 ## Configuration
 
 In addition to the standard TextMate shell variables, the RSpec
 TextMate bundle supports the following:
+
+#### TM\_RSPEC\_BASEDIR
+
+Set the base directory for running RSpec (defaults to the current “Project Folder”). See “Setting the base directory for running examples” above for more info and an example.
 
 #### TM\_RSPEC\_FORMATTER
 
