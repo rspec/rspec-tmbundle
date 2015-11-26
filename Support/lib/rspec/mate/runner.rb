@@ -121,6 +121,15 @@ module RSpec
         rspec_version.split(".").first.to_i >= 3
       end
       
+      def gemfile?
+        # Just `Gemfile` isn't enough: We need `Gemfile.lock` to be able to extract the exact version of RSpec.
+        File.exist?(File.join(ENV['TM_PROJECT_DIRECTORY'], 'Gemfile.lock'))
+      end
+
+      def use_binstub?
+        File.exist?(File.join(ENV['TM_PROJECT_DIRECTORY'], 'bin', 'rspec'))
+      end
+      
     private
 
       def build_argv_from_options(options)
