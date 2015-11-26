@@ -2,7 +2,5 @@
 
 ENV['TM_PROJECT_DIRECTORY'] ||= File.dirname(ENV['TM_FILEPATH'])
 
-$LOAD_PATH.unshift(File.dirname(__FILE__) + '/..')
-
-require 'rspec/mate/runner'
-require 'rspec/mate/switch_command'
+require_relative 'mate/runner'
+require_relative 'mate/switch_command'
