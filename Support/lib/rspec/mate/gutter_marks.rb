@@ -38,6 +38,7 @@ module RSpec
       end
 
       def run_mate(*args)
+        return unless ENV["TM_MATE"]
         system(ENV["TM_MATE"], *args)
       end
 
