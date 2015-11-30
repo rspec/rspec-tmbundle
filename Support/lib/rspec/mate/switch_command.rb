@@ -1,10 +1,13 @@
 require "fileutils"
+require File.dirname(__FILE__) + "/helpers.rb"
 
 module RSpec
   module Mate
     # This is based on Ruy Asan's initial code:
     # http://ruy.ca/posts/6-A-simple-switch-between-source-and-spec-file-command-for-textmate-with-auto-creation-
     class SwitchCommand
+      include Helpers
+      
       def go_to_twin(project_directory, filepath)
         other = twin(filepath)
 
