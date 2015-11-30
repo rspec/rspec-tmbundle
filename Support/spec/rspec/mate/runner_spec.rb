@@ -232,6 +232,7 @@ private
     ENV['TM_FILEPATH']          = nil
     ENV['TM_LINE_NUMBER']       = nil
     ENV['TM_PROJECT_DIRECTORY'] = File.expand_path("../../../../", __FILE__)
+    ENV['TM_RSPEC_BASEDIR']     = nil
   end
   
 end
