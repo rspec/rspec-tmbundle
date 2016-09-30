@@ -140,8 +140,9 @@ module RSpec
       def write_and_open(path)
         FileUtils.mkdir_p(File.dirname(path))
         described = described_class_for(path, base_dir)
+        use_rails_helper = File.exist? "#{base_dir}/spec/rails_helper.rb"
         File.open(path, 'w') do |f|
-          f.puts "require 'spec_helper'"
+          f.puts "require '#{use_rails_helper ? :rails_helper : :spec_helper}'"
           f.puts ''
           f.puts "describe #{described} do"
           f.puts '  ' # <= caret will be here
