@@ -10,6 +10,8 @@
 	<string>.*rails_helper.*</string>
 	<key>firstLineMatch</key>
 	<string>.*spec_helper.*</string>
+	<key>firstLineMatch</key>
+	<string>.*rspec/autorun.*</string>
 	<key>foldingStartMarker</key>
 	<string>(?x)^
 	    (\s*+
