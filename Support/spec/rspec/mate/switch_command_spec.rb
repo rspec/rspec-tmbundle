@@ -177,10 +177,22 @@ module RSpec
           '/Users/foo/Code/bar/lib/some/long_file_name.rb' => 'Some::LongFileName',
           '/Users/foo/Code/bar/lib/my/own/file.rb' => 'My::Own::File',
 
+          '/Users/foo/Code/spec/some_name.rb' => 'SomeName',
+          '/Users/foo/Code/spec/some/long_file_name.rb' => 'Some::LongFileName',
+          '/Users/foo/Code/spec/my/own/file.rb' => 'My::Own::File',
+
           # rails
           '/Users/foo/Code/bar/app/controllers/file_controller.rb' => 'FileController',
           '/Users/foo/Code/bar/app/models/my/own/file.rb' => 'My::Own::File',
           '/Users/foo/Code/bar/app/other/my/own/file.rb' => 'My::Own::File',
+
+          '/Users/foo/Code/bar/spec/controllers/file_controller.rb' => 'FileController',
+          '/Users/foo/Code/bar/spec/models/my/own/file.rb' => 'My::Own::File',
+
+          # This should probably detect it's a rails app from the presence
+          # of an app/other folder in order to work.
+          #
+          # '/Users/foo/Code/bar/spec/other/my/own/file.rb' => 'My::Own::File',
         }.each_pair do |path, class_name|
           it "extracts the full class name from the path (#{class_name})" do
             expect(subject.described_class_for(path, base)).to eq(class_name)

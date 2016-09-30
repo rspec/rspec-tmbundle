@@ -154,7 +154,9 @@ module RSpec
         relative_path = path[base_path.size..-1]
         camelize = lambda {|part| part.gsub(/_([a-z])/){$1.upcase}.gsub(/^([a-z])/){$1.upcase}}
         parts = File.dirname(relative_path).split('/').compact.reject(&:empty?)
-        parts.shift if parts.first == 'app'
+        parts.shift if parts[0] == 'app'
+        parts.shift if parts[0] == 'spec' && %w[controllers helpers models views].include?(parts[1])
+
         described = Array(parts[1..-1]).map(&camelize)
         described << camelize.call(File.basename(path, '_spec.rb').split('.').first)
         described = described.compact.reject(&:empty?).join('::')
