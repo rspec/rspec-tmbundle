@@ -7,7 +7,7 @@ module RSpec
     # http://ruy.ca/posts/6-A-simple-switch-between-source-and-spec-file-command-for-textmate-with-auto-creation-
     class SwitchCommand
       include Helpers
-      
+
       def go_to_twin(project_directory, filepath)
         other = twin(filepath)
 
@@ -86,19 +86,16 @@ module RSpec
       end
 
       def file_type(path)
-        if path =~ /^(.*?)\/(spec)\/(controllers|helpers|models|views)\/(.*?)$/
-          return "#{$3[0..-2]} spec"
+        case path
+        when /^(.*?)\/(spec)\/(controllers|helpers|models|views)\/(.*?)$/
+          "#{$3[0..-2]} spec"
+        when /^(.*?)\/(app)\/(controllers|helpers|models|views)\/(.*?)$/
+          $3[0..-2]
+        when /_spec\.rb$/
+          "spec"
+        else
+          "file"
         end
-
-        if path =~ /^(.*?)\/(app)\/(controllers|helpers|models|views)\/(.*?)$/
-          return $3[0..-2]
-        end
-
-        if path =~ /_spec\.rb$/
-          return "spec"
-        end
-
-        "file"
       end
 
       def create?(relative_twin, file_type)
