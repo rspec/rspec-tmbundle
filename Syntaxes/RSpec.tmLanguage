@@ -7,11 +7,7 @@
 		<string>spec.rb</string>
 	</array>
 	<key>firstLineMatch</key>
-	<string>.*rails_helper.*</string>
-	<key>firstLineMatch</key>
-	<string>.*spec_helper.*</string>
-	<key>firstLineMatch</key>
-	<string>.*rspec/autorun.*</string>
+	<string>.*(rails_helper|spec_helper|rspec/autorun).*</string>
 	<key>foldingStartMarker</key>
 	<string>(?x)^
 	    (\s*+
