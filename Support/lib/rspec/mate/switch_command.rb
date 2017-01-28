@@ -7,7 +7,7 @@ module RSpec
     # http://ruy.ca/posts/6-A-simple-switch-between-source-and-spec-file-command-for-textmate-with-auto-creation-
     class SwitchCommand
       include Helpers
-      
+
       def go_to_twin(project_directory, filepath)
         other = twin(filepath)
 
@@ -86,19 +86,16 @@ module RSpec
       end
 
       def file_type(path)
-        if path =~ /^(.*?)\/(spec)\/(controllers|helpers|models|views)\/(.*?)$/
-          return "#{$3[0..-2]} spec"
+        case path
+        when /^(.*?)\/(spec)\/(controllers|helpers|models|views)\/(.*?)$/
+          "#{$3[0..-2]} spec"
+        when /^(.*?)\/(app)\/(controllers|helpers|models|views)\/(.*?)$/
+          $3[0..-2]
+        when /_spec\.rb$/
+          "spec"
+        else
+          "file"
         end
-
-        if path =~ /^(.*?)\/(app)\/(controllers|helpers|models|views)\/(.*?)$/
-          return $3[0..-2]
-        end
-
-        if path =~ /_spec\.rb$/
-          return "spec"
-        end
-
-        "file"
       end
 
       def create?(relative_twin, file_type)
@@ -143,8 +140,9 @@ module RSpec
       def write_and_open(path)
         FileUtils.mkdir_p(File.dirname(path))
         described = described_class_for(path, base_dir)
+        use_rails_helper = File.exist? "#{base_dir}/spec/rails_helper.rb"
         File.open(path, 'w') do |f|
-          f.puts "require 'spec_helper'"
+          f.puts "require '#{use_rails_helper ? :rails_helper : :spec_helper}'"
           f.puts ''
           f.puts "describe #{described} do"
           f.puts '  ' # <= caret will be here
@@ -157,7 +155,9 @@ module RSpec
         relative_path = path[base_path.size..-1]
         camelize = lambda {|part| part.gsub(/_([a-z])/){$1.upcase}.gsub(/^([a-z])/){$1.upcase}}
         parts = File.dirname(relative_path).split('/').compact.reject(&:empty?)
-        parts.shift if parts.first == 'app'
+        parts.shift if parts[0] == 'app'
+        parts.shift if parts[0] == 'spec' && %w[controllers helpers models views].include?(parts[1])
+
         described = Array(parts[1..-1]).map(&camelize)
         described << camelize.call(File.basename(path, '_spec.rb').split('.').first)
         described = described.compact.reject(&:empty?).join('::')
