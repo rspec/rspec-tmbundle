@@ -25,6 +25,8 @@ The bundle runs RSpec in a subshell. The command to start RSpec is determined as
  * If there is no binstub, but `Gemfile.lock` is present, RSpec is run via `bundle exec rspec`.
  * If there is neither a binstub nor a `Gemfile.lock`, RSpec is simply run via `rspec` (__not recommended__ – use only if you know exactly what you’re doing).
 
+Internally the bundle uses `Executable.find` from the Ruby bundle to detect how to run RSpec. For details see https://github.com/textmate/ruby.tmbundle/blob/master/Support/lib/executable.rb
+
 Running RSpec / Ruby from a subshell means that TextMate must be configured to work with whatever Ruby version manager you're using ([rbenv](https://github.com/sstephenson/rbenv), [rvm](http://rvm.io/), …). Normally, this means customizing the `$PATH` variable. See [Defining a $PATH](http://blog.macromates.com/2014/defining-a-path/) in the TextMate blog for details and caveats.
 
 ### Setting the base directory for running examples

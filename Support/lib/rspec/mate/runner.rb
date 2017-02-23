@@ -3,6 +3,10 @@ require 'cgi'
 require 'shellwords'
 require 'open3'
 require 'yaml'
+
+# This works because we declare a dependency on the Ruby bundle (see `info.plist`).
+require "#{ENV['TM_RUBY_BUNDLE_SUPPORT']}/lib/executable"
+
 require_relative 'helpers'
 
 module RSpec
@@ -55,14 +59,7 @@ module RSpec
         $stderr    = stderr
 
         Dir.chdir(project_directory) do
-          cmd =
-            if use_binstub?
-              %w[bin/rspec] + argv
-            elsif gemfile?
-              %w[bundle exec rspec] + argv
-            else
-              %w[rspec] + argv
-            end
+          cmd = Executable.find("rspec") + argv
           Open3.popen3(*cmd) do |i, out, err, _thread|
             i.close
             stderr_thread = Thread.new do
@@ -92,15 +89,6 @@ module RSpec
         File.open(LAST_REMEMBERED_FILE_CACHE, "w") do |f|
           f << file
         end
-      end
-
-      def gemfile?
-        # Just `Gemfile` isn't enough: We need `Gemfile.lock` to make sure the gem has already been installed.
-        File.exist?(File.join(base_dir, 'Gemfile.lock'))
-      end
-
-      def use_binstub?
-        File.exist?(File.join(base_dir, 'bin', 'rspec'))
       end
 
     private
