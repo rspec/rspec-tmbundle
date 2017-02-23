@@ -167,25 +167,32 @@ describe RSpec::Mate::Runner do
     end
   end
 
-  describe '#rspec_version' do
+  describe '#run_rspec' do
+    def expect_rspec_to_be_run_as(cmd)
+      expect(Open3).to receive(:popen3).with(*cmd)
+    end
+    
     context 'with Gemfile.lock' do
-      it 'extracts the version from Gemfile.lock' do
+      it 'uses `bundle exec rspec`' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_gemfile")
-        expect(@spec_mate.rspec_version).to eq "2.12.2"
+        expect_rspec_to_be_run_as(%w(bundle exec rspec some args))
+        @spec_mate.run_rspec(%w(some args))
       end
     end
     
     context 'without Gemfile.lock' do
-      it 'gets the version from `bin/rspec --version`, if a binstub is present' do
+      it 'uses `bin/rspec`, if a binstub is present' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_binstub")
-        expect(@spec_mate.rspec_version).to eq "2.99.1-fake"
+        expect_rspec_to_be_run_as(%w(bin/rspec some args))
+        @spec_mate.run_rspec(%w(some args))
       end
       
-      it 'gets the version from `rspec --version`, if no binstub is present' do
+      it 'uses `rspec`, if no binstub is present' do
         path_to_fake_rspec = File.join(fixtures_path("project_with_binstub"), "bin")
         ENV["PATH"] = path_to_fake_rspec + ":" + ENV["PATH"]
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("legacy_project")
-        expect(@spec_mate.rspec_version).to eq "2.99.1-fake"
+        expect_rspec_to_be_run_as(%w(rspec some args))
+        @spec_mate.run_rspec(%w(some args))
       end
     end
     
@@ -193,13 +200,15 @@ describe RSpec::Mate::Runner do
       it 'looks there for the Gemfile.lock' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_gemfile")
         ENV["TM_RSPEC_BASEDIR"] = fixtures_path("project_with_gemfile") + "/subdir"
-        expect(@spec_mate.rspec_version).to eq "3.3.0"
+        expect_rspec_to_be_run_as(%w(bundle exec rspec some args))
+        @spec_mate.run_rspec(%w(some args))
       end
 
       it 'looks there for the binstub' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_binstub")
         ENV["TM_RSPEC_BASEDIR"] = fixtures_path("project_with_binstub") + "/subdir"
-        expect(@spec_mate.rspec_version).to eq "2.99.1-subdir-fake"
+        expect_rspec_to_be_run_as(%w(bin/rspec some args))
+        @spec_mate.run_rspec(%w(some args))
       end
     end
     

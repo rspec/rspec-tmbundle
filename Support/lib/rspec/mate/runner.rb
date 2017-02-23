@@ -98,29 +98,8 @@ module RSpec
         end
       end
 
-
-      def rspec_version
-        @rspec_version ||= begin
-          version = if gemfile?
-            specs = File.readlines(File.join(base_dir, 'Gemfile.lock'))
-            # RegExp taken from https://github.com/bundler/bundler/blob/master/lib/bundler/lockfile_parser.rb
-            specs.detect{ |line| line.match(%r{^ {4}rspec-core(?: \(([^-]*)(?:-(.*))?\))?$}) } && $1 or raise "'rspec' not found in Gemfile.lock!"
-          elsif use_binstub?
-            Dir.chdir(base_dir) do
-              `bin/rspec --version`.chomp
-            end
-          else
-            Dir.chdir(base_dir) do
-              `rspec --version`.chomp
-            end
-          end
-          raise "Could not determine RSpec version." if version == ""
-          version
-        end
-      end
-
       def gemfile?
-        # Just `Gemfile` isn't enough: We need `Gemfile.lock` to be able to extract the exact version of RSpec.
+        # Just `Gemfile` isn't enough: We need `Gemfile.lock` to make sure the gem has already been installed.
         File.exist?(File.join(base_dir, 'Gemfile.lock'))
       end
 
