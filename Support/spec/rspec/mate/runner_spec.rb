@@ -153,18 +153,6 @@ describe RSpec::Mate::Runner do
       expect(html).to_not match @first_failing_spec
       expect(html).to match @second_failing_spec
     end
-
-    it "uses old syntax for RSpec 2" do
-      ENV['TM_FILEPATH'] = "/path/to/spec.rb"
-      ENV['TM_LINE_NUMBER'] = '8'
-
-      allow(@spec_mate).to receive(:rspec3?).and_return false
-      expect(@spec_mate).to receive(:run_rspec) do |argv|
-        expect(argv).to include("/path/to/spec.rb")
-        expect(argv[1..2]).to eq ["--line", "8"]
-      end
-      @spec_mate.run_focussed
-    end
   end
 
   describe "alternative formatter" do

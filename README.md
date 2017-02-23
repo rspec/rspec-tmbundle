@@ -1,6 +1,6 @@
 # RSpec TextMate Bundle
 
-This bundle works with **TextMate 2** and **RSpec 2 and 3**. For TextMate 1 and/or RSpec 1 please use the legacy version from the branch “rspec1-textmate1”.
+This bundle works with **TextMate 2** and **RSpec 3**. For TextMate 1 and/or RSpec 1 or 2 please use the legacy versions from the branches `rspec1-textmate1` or `rspec2`, respectively.
 
 ## Installation
 
