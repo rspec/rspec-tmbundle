@@ -12,8 +12,8 @@ module RSpec
     module Formatters
       class TextMateFormatter < ::RSpec::Core::Formatters::BaseFormatter
         ::RSpec::Core::Formatters.register self, :message, :seed, :start, :example_group_started, :start_dump,
-                            :example_started, :example_passed, :example_failed,
-                            :example_pending, :dump_summary
+                                           :example_started, :example_passed, :example_failed,
+                                           :example_pending, :dump_summary
 
         def initialize(output)
           super(output)
@@ -97,7 +97,7 @@ module RSpec
             example.execution_result.run_time,
             @failed_examples.size,
             exception_details,
-            (extra == "") ? false : extra,
+            extra == "" ? false : extra,
             true
           )
           @printer.flush
@@ -143,7 +143,7 @@ module RSpec
         def percent_done
           result = 100.0
           if @example_count > 0
-            result = (((example_number).to_f / @example_count.to_f * 1000).to_i / 10.0).to_f
+            result = ((example_number.to_f / @example_count.to_f * 1000).to_i / 10.0).to_f
           end
           result
         end

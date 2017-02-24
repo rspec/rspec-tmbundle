@@ -9,36 +9,32 @@ module RSpec
   module Mate
     class Runner
       include Helpers
-      LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt"
-      LAST_RUN_CACHE             = "/tmp/textmate_rspec_last_run.yml"
-      
+      LAST_REMEMBERED_FILE_CACHE = "/tmp/textmate_rspec_last_remembered_file_cache.txt".freeze
+      LAST_RUN_CACHE             = "/tmp/textmate_rspec_last_run.yml".freeze
+
       def run_files(options={})
         files = ENV['TM_SELECTED_FILES'] ? Shellwords.shellwords(ENV['TM_SELECTED_FILES']) : ["spec/"]
-        options.merge!({:files => files})
+        options[:files] = files
         run(options)
       end
 
       def run_file(options={})
-        options.merge!({:files => [single_file]})
+        options[:files] = [single_file]
         run(options)
       end
 
       def run_last_remembered_file(options={})
-        options.merge!({:files => [last_remembered_single_file]})
+        options[:files] = [last_remembered_single_file]
         run(options)
       end
 
       def run_again
         run(:run_again => true)
       end
-      
+
       def run_focussed(options={})
-        options.merge!(
-          {
-            :files => [single_file],
-            :line  => ENV['TM_LINE_NUMBER']
-          }
-        )
+        options[:files] = [single_file]
+        options[:line] = ENV['TM_LINE_NUMBER']
 
         run(options)
       end
@@ -52,29 +48,29 @@ module RSpec
         end
         run_rspec(argv)
       end
-      
+
       def run_rspec(argv)
         stderr     = StringIO.new
         old_stderr = $stderr
         $stderr    = stderr
 
         Dir.chdir(project_directory) do
-          cmd = 
+          cmd =
             if use_binstub?
-              %w(bin/rspec) + argv
+              %w[bin/rspec] + argv
             elsif gemfile?
-              %w(bundle exec rspec) + argv
+              %w[bundle exec rspec] + argv
             else
-              %w(rspec) + argv
+              %w[rspec] + argv
             end
-          Open3.popen3(*cmd) do |i, out, err, thread|
+          Open3.popen3(*cmd) do |i, out, err, _thread|
             i.close
             stderr_thread = Thread.new do
-              while (line = err.gets) do
+              while (line = err.gets)
                 stderr.puts line
               end
             end
-            while (line = out.gets) do
+            while (line = out.gets)
               $stdout.puts line
               $stdout.flush
             end
@@ -85,7 +81,7 @@ module RSpec
         unless stderr.string == ""
           $stdout <<
             "<pre class='stderr'>" <<
-              CGI.escapeHTML(stderr.string) <<
+            CGI.escapeHTML(stderr.string) <<
             "</pre>"
         end
 
@@ -106,12 +102,12 @@ module RSpec
       def use_binstub?
         File.exist?(File.join(base_dir, 'bin', 'rspec'))
       end
-      
+
     private
 
       def build_argv_from_options(options)
         default_formatter = 'RSpec::Mate::Formatters::TextMateFormatter'
-        formatter  = ENV['TM_RSPEC_FORMATTER'] || default_formatter
+        formatter = ENV['TM_RSPEC_FORMATTER'] || default_formatter
 
         # If :line is given, only the first file from :files is used. This should be ok though, because
         # :line is only ever set in #run_focussed, and there :files is always set to a single file only.
@@ -121,19 +117,15 @@ module RSpec
         argv << '-r' << File.join(File.dirname(__FILE__), 'text_mate_formatter') if formatter == 'RSpec::Mate::Formatters::TextMateFormatter'
         argv << '-r' << File.join(File.dirname(__FILE__), 'filter_bundle_backtrace')
 
-        if ENV['TM_RSPEC_OPTS']
-          argv += ENV['TM_RSPEC_OPTS'].split(" ")
-        end
-        
+        argv += ENV['TM_RSPEC_OPTS'].split(" ") if ENV['TM_RSPEC_OPTS']
+
         argv
       end
-      
+
       def last_remembered_single_file
         file = File.read(LAST_REMEMBERED_FILE_CACHE).strip
 
-        if file.size > 0
-          File.expand_path(file)
-        end
+        File.expand_path(file) unless file.empty?
       end
 
       def save_as_last_run(args)
@@ -147,7 +139,9 @@ module RSpec
       end
 
       def project_directory
-        File.expand_path(base_dir) rescue File.dirname(single_file)
+        File.expand_path(base_dir)
+      rescue
+        File.dirname(single_file)
       end
 
       def single_file

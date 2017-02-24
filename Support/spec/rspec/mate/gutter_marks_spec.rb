@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'rspec/mate/gutter_marks'
 
 describe RSpec::Mate::GutterMarks do
-  let(:example_group){ RSpec.describe("example group") }
+  let(:example_group) { RSpec.describe("example group") }
 
   def example_with_location(path, line, &block)
     example_group.example('example', &block).tap do |ex|
@@ -12,9 +12,9 @@ describe RSpec::Mate::GutterMarks do
   end
 
   it 'runs `mate` with the appropriate arguments', :sandboxed do
-    example_with_location('./foo/successes.rb', 5){ }
-    example_with_location('./foo/failures.rb', 12){ raise "a failed example" }
-    example_with_location('./foo/failures.rb', 24){ raise "another failure" }
+    example_with_location('./foo/successes.rb', 5) {}
+    example_with_location('./foo/failures.rb', 12) { raise "a failed example" }
+    example_with_location('./foo/failures.rb', 24) { raise "another failure" }
     example_group.run
     gm = RSpec::Mate::GutterMarks.new(example_group.examples)
     expect(gm).to receive(:run_mate).with("--clear-mark=warning", "./foo/successes.rb")

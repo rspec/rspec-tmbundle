@@ -45,7 +45,6 @@ module RSpec
         it "suggests a plain file" do
           expect("/a/full/path/lib/snoopy/mooky.rb").to be_a("file")
         end
-
       end
 
       describe "in a Rails or Merb app" do
@@ -166,7 +165,6 @@ module RSpec
         it "suggests an rjs view" do
           expect("/a/full/path/app/views/mooky/show.js.rjs").to be_a("view")
         end
-
       end
 
       describe '#described_class_for' do

@@ -6,6 +6,7 @@ require 'erb'
 module RSpec
   module Mate
     module Formatters
+      # rubocop:disable ClassLength,LineLength
       class TextMateBacktracePrinter
         include ERB::Util # for the #h method
         def initialize(output)
@@ -51,9 +52,9 @@ module RSpec
           @output.puts "    <dd class=\"example passed\"><span class=\"passed_spec_name\">#{h(description)}</span><span class='duration'>#{formatted_run_time}s</span></dd>"
         end
 
-        # rubocop:disable Style/ParameterLists
-        def print_example_failed(pending_fixed, description, run_time, failure_id, exception, extra_content, escape_backtrace=false)
-          # rubocop:enable Style/ParameterLists
+        # rubocop:disable Metrics/ParameterLists
+        def print_example_failed(pending_fixed, description, run_time, failure_id, exception, extra_content, _escape_backtrace=false)
+          # rubocop:enable Metrics/ParameterLists
           formatted_run_time = "%.5f" % run_time
           backtrace = make_backtrace_clickable(exception[:backtrace])
 
@@ -120,8 +121,10 @@ module RSpec
 
         def make_backtrace_clickable(backtrace)
           backtrace.gsub!(/(^.*?):(\d+):(.*)/) do
-            path, line, rest = $1, $2, $3
-            url = "txmt://open?url=file://#{CGI::escape(File.expand_path(path))}&line=#{$2}"
+            path = Regexp.last_match(1)
+            line = Regexp.last_match(2)
+            rest = Regexp.last_match(3)
+            url = "txmt://open?url=file://#{CGI.escape(File.expand_path(path))}&line=#{Regexp.last_match(2)}"
             link_text = "#{path}:#{line}"
             "<a href='#{CGI.escape_html(url)}'>#{CGI.escape_html(link_text)}</a>:#{CGI.escape_html(rest)}"
           end
@@ -131,7 +134,7 @@ module RSpec
           "style=\"margin-left: #{(number_of_parents - 1) * 15}px;\""
         end
 
-        REPORT_HEADER = <<-EOF
+        REPORT_HEADER = <<-EOF.freeze
 <div class="rspec-report">
 <div id="rspec-header">
   <div id="rspec-progress-wrap"><div id="rspec-progress"></div></div>
@@ -156,7 +159,7 @@ module RSpec
 <div class="results">
 EOF
 
-        GLOBAL_SCRIPTS = <<-EOF
+        GLOBAL_SCRIPTS = <<-EOF.freeze
 
 function addClass(element_id, classname) {
   document.getElementById(element_id).className += (" " + classname);
@@ -239,10 +242,10 @@ function assign_display_style_for_group(classname, display_flag, subgroup_flag) 
 }
 EOF
 
-        GLOBAL_STYLES = <<-EOF
+        GLOBAL_STYLES = <<-EOF.freeze
 #rspec-header {
   position: relative;
-  color: #fff; 
+  color: #fff;
   height: 4em;
 }
 
@@ -437,7 +440,7 @@ a {
 }
 EOF
 
-        HTML_HEADER = <<-EOF
+        HTML_HEADER = <<-EOF.freeze
 <!DOCTYPE html>
 <html lang='en'>
 <head>

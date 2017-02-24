@@ -13,11 +13,11 @@ describe RSpec::Mate::Runner do
   ensure
     $stdout = original_stdout
   end
-  
+
   before(:each) do
     # TODO: long path
-    @first_failing_spec  = /fixtures\/example_failing_spec\.rb:3/n
-    @second_failing_spec = /fixtures\/example_failing_spec\.rb:7/n
+    @first_failing_spec  = %r{fixtures/example_failing_spec\.rb:3}n
+    @second_failing_spec = %r{fixtures/example_failing_spec\.rb:7}n
 
     @original_env = ENV.to_hash
     set_env
@@ -27,10 +27,10 @@ describe RSpec::Mate::Runner do
       "#{File.dirname(__FILE__)}/../../../lib/rspec/mate.rb"
     )
 
-    # Make sure we don’t overwrite the “real” files when running the examples here
+    # Make sure we don't overwrite the "real" files when running the examples here
     stub_const("RSpec::Mate::Runner::LAST_RUN_CACHE", "/tmp/textmate_rspec_last_run.test.yml")
     stub_const("RSpec::Mate::Runner::LAST_REMEMBERED_FILE_CACHE", "/tmp/textmate_rspec_last_remembered_file_cache.test.txt")
-    
+
     @spec_mate = RSpec::Mate::Runner.new
   end
 
@@ -46,9 +46,9 @@ describe RSpec::Mate::Runner do
     it "shows standard error output nicely in a PRE block" do
       ENV['TM_FILEPATH'] = fixtures_path('example_stderr_spec.rb')
 
-      html = capture{ @spec_mate.run_file }
+      html = capture { @spec_mate.run_file }
 
-      expect(html).to match /#{Regexp.escape("<pre class='stderr'>2 + 2 = 4\n4 &lt; 8\n</pre>")}/
+      expect(html).to match(/#{Regexp.escape("<pre class='stderr'>2 + 2 = 4\n4 &lt; 8\n</pre>")}/)
     end
   end
 
@@ -56,7 +56,7 @@ describe RSpec::Mate::Runner do
     it "runs whole file when only file specified" do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
 
-      html = capture{ @spec_mate.run_file }
+      html = capture { @spec_mate.run_file }
 
       expect(html).to match @first_failing_spec
       expect(html).to match @second_failing_spec
@@ -71,14 +71,14 @@ describe RSpec::Mate::Runner do
       ]
 
       # TODO: adjust fixtures_path to take an array
-      ENV['TM_SELECTED_FILES'] = Shellwords.join(fixtures.map{ |fixture| fixtures_path(fixture) })
+      ENV['TM_SELECTED_FILES'] = Shellwords.join(fixtures.map { |fixture| fixtures_path(fixture) })
 
-      html = capture{ @spec_mate.run_files }
+      html = capture { @spec_mate.run_files }
 
       expect(html).to match @first_failing_spec
       expect(html).to match @second_failing_spec
-      expect(html).to match /should pass/
-      expect(html).to match /should pass too/
+      expect(html).to match(/should pass/)
+      expect(html).to match(/should pass too/)
     end
 
     it 'runs all examples in "spec/" if nothing is selected' do
@@ -93,7 +93,7 @@ describe RSpec::Mate::Runner do
   describe "#run_last_remembered_file" do
     it "runs all of the selected files" do
       @spec_mate.save_as_last_remembered_file fixtures_path('example_failing_spec.rb')
-      html = capture{ @spec_mate.run_last_remembered_file }
+      html = capture { @spec_mate.run_last_remembered_file }
 
       expect(html).to match @first_failing_spec
     end
@@ -102,7 +102,8 @@ describe RSpec::Mate::Runner do
   describe '#run_again' do
     def self.it_works_for(method, &block)
       it "works for #{method}" do
-        original_argv, rerun_argv = nil, nil
+        original_argv = nil
+        rerun_argv = nil
         expect(@spec_mate).to receive(:run_rspec) do |argv|
           original_argv = argv.dup
         end
@@ -115,17 +116,17 @@ describe RSpec::Mate::Runner do
         expect(rerun_argv).to eq original_argv
       end
     end
-    
+
     it_works_for '#run_file' do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       @spec_mate.run_file
     end
-    
+
     it_works_for '#run_files' do
       ENV['TM_SELECTED_FILES'] = "foo/bar_spec.rb baz/baz/baz/baz_spec.rb"
       @spec_mate.run_files
     end
-    
+
     it_works_for '#run_focused' do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '4'
@@ -138,7 +139,7 @@ describe RSpec::Mate::Runner do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '4'
 
-      html = capture{ @spec_mate.run_focussed }
+      html = capture { @spec_mate.run_focussed }
 
       expect(html).to match @first_failing_spec
       expect(html).to_not match @second_failing_spec
@@ -148,7 +149,7 @@ describe RSpec::Mate::Runner do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '8'
 
-      html = capture{ @spec_mate.run_focussed }
+      html = capture { @spec_mate.run_focussed }
 
       expect(html).to_not match @first_failing_spec
       expect(html).to match @second_failing_spec
@@ -160,10 +161,10 @@ describe RSpec::Mate::Runner do
       ENV['TM_RSPEC_FORMATTER'] = 'RSpec::Core::Formatters::BaseTextFormatter'
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
 
-      text = capture{ @spec_mate.run_file }
+      text = capture { @spec_mate.run_file }
 
-      expect(text).to match /1\) An example failing spec should fail/
-      expect(text).to match /2\) An example failing spec should also fail/
+      expect(text).to match(/1\) An example failing spec should fail/)
+      expect(text).to match(/2\) An example failing spec should also fail/)
     end
   end
 
@@ -171,52 +172,51 @@ describe RSpec::Mate::Runner do
     def expect_rspec_to_be_run_as(cmd)
       expect(Open3).to receive(:popen3).with(*cmd)
     end
-    
+
     context 'with Gemfile.lock' do
       it 'uses `bundle exec rspec`' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_gemfile")
-        expect_rspec_to_be_run_as(%w(bundle exec rspec some args))
-        @spec_mate.run_rspec(%w(some args))
+        expect_rspec_to_be_run_as(%w[bundle exec rspec some args])
+        @spec_mate.run_rspec(%w[some args])
       end
     end
-    
+
     context 'without Gemfile.lock' do
       it 'uses `bin/rspec`, if a binstub is present' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_binstub")
-        expect_rspec_to_be_run_as(%w(bin/rspec some args))
-        @spec_mate.run_rspec(%w(some args))
+        expect_rspec_to_be_run_as(%w[bin/rspec some args])
+        @spec_mate.run_rspec(%w[some args])
       end
-      
+
       it 'uses `rspec`, if no binstub is present' do
         path_to_fake_rspec = File.join(fixtures_path("project_with_binstub"), "bin")
         ENV["PATH"] = path_to_fake_rspec + ":" + ENV["PATH"]
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("legacy_project")
-        expect_rspec_to_be_run_as(%w(rspec some args))
-        @spec_mate.run_rspec(%w(some args))
+        expect_rspec_to_be_run_as(%w[rspec some args])
+        @spec_mate.run_rspec(%w[some args])
       end
     end
-    
+
     context 'when TM_RSPEC_BASEDIR is set' do
       it 'looks there for the Gemfile.lock' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_gemfile")
         ENV["TM_RSPEC_BASEDIR"] = fixtures_path("project_with_gemfile") + "/subdir"
-        expect_rspec_to_be_run_as(%w(bundle exec rspec some args))
-        @spec_mate.run_rspec(%w(some args))
+        expect_rspec_to_be_run_as(%w[bundle exec rspec some args])
+        @spec_mate.run_rspec(%w[some args])
       end
 
       it 'looks there for the binstub' do
         ENV["TM_PROJECT_DIRECTORY"] = fixtures_path("project_with_binstub")
         ENV["TM_RSPEC_BASEDIR"] = fixtures_path("project_with_binstub") + "/subdir"
-        expect_rspec_to_be_run_as(%w(bin/rspec some args))
-        @spec_mate.run_rspec(%w(some args))
+        expect_rspec_to_be_run_as(%w[bin/rspec some args])
+        @spec_mate.run_rspec(%w[some args])
       end
     end
-    
   end
 
 private
 
-  def fixtures_path(fixture_file = nil)
+  def fixtures_path(fixture_file=nil)
     # TODO: long path
     fixtures_path = File.expand_path(
       File.dirname(__FILE__)
@@ -231,5 +231,4 @@ private
     ENV['TM_PROJECT_DIRECTORY'] = File.expand_path("../../../../", __FILE__)
     ENV['TM_RSPEC_BASEDIR']     = nil
   end
-  
 end

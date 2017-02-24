@@ -5,8 +5,8 @@ module RSpec
   module Mate
     class GutterMarks
       include Helpers
-      
-      MARK = "warning"
+
+      MARK = "warning".freeze
       SpecError = Struct.new(:line, :message)
 
       attr_reader :errors_by_path
@@ -26,14 +26,14 @@ module RSpec
         end
       end
 
-      private
+    private
 
       def clear_marks_for(path)
         run_mate("--clear-mark=#{MARK}", path)
       end
 
       def set_mark_for(path, line, message)
-        message = message.strip.gsub("\n", "\r")
+        message = message.strip.tr("\n", "\r")
         run_mate("--set-mark=#{MARK}:#{message}", "--line=#{line}", path)
       end
 
@@ -46,11 +46,10 @@ module RSpec
         @errors_by_path = {}
         examples.each do |example|
           @errors_by_path[example.file_path] ||= []
-          if example.execution_result.status == :failed && example.location =~ /:(\d+)$/
-            line = $1
-            message = example.exception ? example.exception.message : "(no exception message)"
-            @errors_by_path[example.file_path] << SpecError.new(line, message)
-          end
+          next unless example.execution_result.status == :failed && example.location =~ /:(\d+)$/
+          line = Regexp.last_match(1)
+          message = example.exception ? example.exception.message : "(no exception message)"
+          @errors_by_path[example.file_path] << SpecError.new(line, message)
         end
       end
     end

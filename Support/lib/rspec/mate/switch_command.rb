@@ -12,14 +12,12 @@ module RSpec
         other = twin(filepath)
 
         if File.file?(other)
-          %x{ "$TM_SUPPORT_PATH/bin/mate" "#{other}" }
+          `"$TM_SUPPORT_PATH/bin/mate" "#{other}"`
         else
-          relative  = other[project_directory.length+1..-1]
+          relative  = other[project_directory.length + 1..-1]
           file_type = file_type(other)
 
-          if create?(relative, file_type)
-            write_and_open(other)
-          end
+          write_and_open(other) if create?(relative, file_type)
         end
       end
 
@@ -38,59 +36,59 @@ module RSpec
       end
 
       def twin(path)
-        if path =~ /^(.*?)\/(lib|app|spec)\/(.*?)$/
-          framework, parent, rest = $1, $2, $3
-          framework.extend Framework
+        return unless path =~ %r{^(.*?)/(lib|app|spec)/(.*?)$}
+        framework = Regexp.last_match(1)
+        parent = Regexp.last_match(2)
+        framework.extend Framework
 
-          case parent
-            when 'lib', 'app' then
-              if framework.merb_or_rails?
-                if path.include?("/app/lib/")
-                  path = path.gsub("/app/lib/", "/spec/app/lib/")
-                else
-                  path = path.gsub(/\/app\//, "/spec/")
-                  path = path.gsub(/\/lib\//, "/spec/lib/")
-                end
-              else
-                path = path.gsub(/\/lib\//, "/spec/")
-              end
-
-              path = path.gsub(/\.rb$/, "_spec.rb")
-              path = path.gsub(/\.erb$/, ".erb_spec.rb")
-              path = path.gsub(/\.haml$/, ".haml_spec.rb")
-              path = path.gsub(/\.slim$/, ".slim_spec.rb")
-              path = path.gsub(/\.rhtml$/, ".rhtml_spec.rb")
-              path = path.gsub(/\.rjs$/, ".rjs_spec.rb")
-            when 'spec' then
-              path = path.gsub(/\.rjs_spec\.rb$/, ".rjs")
-              path = path.gsub(/\.rhtml_spec\.rb$/, ".rhtml")
-              path = path.gsub(/\.erb_spec\.rb$/, ".erb")
-              path = path.gsub(/\.haml_spec\.rb$/, ".haml")
-              path = path.gsub(/\.slim_spec\.rb$/, ".slim")
-              path = path.gsub(/_spec\.rb$/, ".rb")
-
-              if framework.merb_or_rails?
-                if path.include?("/spec/app/lib/")
-                  path = path.gsub("/spec/app/lib/", "/app/lib/")
-                else
-                  path = path.gsub(/\/spec\/lib\//, "/lib/")
-                  path = path.gsub(/\/spec\//, "/app/")
-                end
-              else
-                path = path.gsub(/\/spec\//, "/lib/")
-              end
+        case parent
+        when 'lib', 'app' then
+          if framework.merb_or_rails?
+            if path.include?("/app/lib/")
+              path = path.gsub("/app/lib/", "/spec/app/lib/")
+            else
+              path = path.gsub(%r{/app/}, "/spec/")
+              path = path.gsub(%r{/lib/}, "/spec/lib/")
+            end
+          else
+            path = path.gsub(%r{/lib/}, "/spec/")
           end
 
-          return path
+          path = path.gsub(/\.rb$/, "_spec.rb")
+          path = path.gsub(/\.erb$/, ".erb_spec.rb")
+          path = path.gsub(/\.haml$/, ".haml_spec.rb")
+          path = path.gsub(/\.slim$/, ".slim_spec.rb")
+          path = path.gsub(/\.rhtml$/, ".rhtml_spec.rb")
+          path = path.gsub(/\.rjs$/, ".rjs_spec.rb")
+        when 'spec' then
+          path = path.gsub(/\.rjs_spec\.rb$/, ".rjs")
+          path = path.gsub(/\.rhtml_spec\.rb$/, ".rhtml")
+          path = path.gsub(/\.erb_spec\.rb$/, ".erb")
+          path = path.gsub(/\.haml_spec\.rb$/, ".haml")
+          path = path.gsub(/\.slim_spec\.rb$/, ".slim")
+          path = path.gsub(/_spec\.rb$/, ".rb")
+
+          if framework.merb_or_rails?
+            if path.include?("/spec/app/lib/")
+              path = path.gsub("/spec/app/lib/", "/app/lib/")
+            else
+              path = path.gsub(%r{/spec/lib/}, "/lib/")
+              path = path.gsub(%r{/spec/}, "/app/")
+            end
+          else
+            path = path.gsub(%r{/spec/}, "/lib/")
+          end
         end
+
+        path
       end
 
       def file_type(path)
         case path
-        when /^(.*?)\/(spec)\/(controllers|helpers|models|views)\/(.*?)$/
-          "#{$3[0..-2]} spec"
-        when /^(.*?)\/(app)\/(controllers|helpers|models|views)\/(.*?)$/
-          $3[0..-2]
+        when %r{^(.*?)/(spec)/(controllers|helpers|models|views)/(.*?)$}
+          "#{Regexp.last_match(3)[0..-2]} spec"
+        when %r{^(.*?)/(app)/(controllers|helpers|models|views)/(.*?)$}
+          Regexp.last_match(3)[0..-2]
         when /_spec\.rb$/
           "spec"
         else
@@ -99,7 +97,10 @@ module RSpec
       end
 
       def create?(relative_twin, file_type)
-        answer = `'#{ ENV['TM_SUPPORT_PATH'] }/bin/CocoaDialog.app/Contents/MacOS/CocoaDialog' yesno-msgbox --no-cancel --icon document --informative-text "#{relative_twin}" --text "Create missing #{file_type}?"`
+        cmd = %('#{ENV['TM_SUPPORT_PATH']}/bin/CocoaDialog.app/Contents/MacOS/CocoaDialog') +
+              %(yesno-msgbox --no-cancel --icon document --informative-text "#{relative_twin}") +
+              %(--text "Create missing #{file_type}?")
+        answer = `#{cmd}`
         answer.to_s.chomp == "1"
       end
 
@@ -113,22 +114,22 @@ module RSpec
         end
       end
 
-      def klass(relative_path, content=nil)
+      def klass(relative_path, _content=nil)
         parts     = relative_path.split('/')
         lib_index = parts.index('lib') || 0
-        parts     = parts[lib_index+1..-1]
-        lines     = Array.new(parts.length*2)
+        parts     = parts[lib_index + 1..-1]
+        lines     = Array.new(parts.length * 2)
 
         parts.each_with_index do |part, n|
           part   = part.capitalize
           indent = "  " * n
 
           line = if part =~ /(.*)\.rb/
-            part = $1
-            "#{indent}class #{part}"
-          else
-            "#{indent}module #{part}"
-          end
+                   part = Regexp.last_match(1)
+                   "#{indent}class #{part}"
+                 else
+                   "#{indent}module #{part}"
+                 end
 
           lines[n] = line
           lines[lines.length - (n + 1)] = "#{indent}end"
@@ -148,12 +149,12 @@ module RSpec
           f.puts '  ' # <= caret will be here
           f.puts 'end'
         end
-        system ENV['TM_SUPPORT_PATH']+'/bin/mate', path, '-l4:3'
+        system ENV['TM_SUPPORT_PATH'] + '/bin/mate', path, '-l4:3'
       end
 
       def described_class_for(path, base_path)
         relative_path = path[base_path.size..-1]
-        camelize = lambda {|part| part.gsub(/_([a-z])/){$1.upcase}.gsub(/^([a-z])/){$1.upcase}}
+        camelize = lambda { |part| part.gsub(/_([a-z])/) { Regexp.last_match(1).upcase }.gsub(/^([a-z])/) { Regexp.last_match(1).upcase } }
         parts = File.dirname(relative_path).split('/').compact.reject(&:empty?)
         parts.shift if parts[0] == 'app'
         parts.shift if parts[0] == 'spec' && %w[controllers helpers models views].include?(parts[1])
@@ -164,6 +165,5 @@ module RSpec
         described
       end
     end
-
   end
 end

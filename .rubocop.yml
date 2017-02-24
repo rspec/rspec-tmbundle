@@ -1,0 +1,24 @@
+inherit_from: .rubocop_rspec_base.yml
+
+# Relax some metric cops for now. All of these should be removed eventually.
+
+AbcSize: 
+  Max: 40
+  
+BlockLength:
+  Max: 180
+  
+ClassLength:
+  Max: 130
+  
+LineLength:
+  Max: 150
+  
+MethodLength:
+  Max: 50
+  
+ModuleLength:
+  Max: 160
+
+PerceivedComplexity:
+  Max: 12
