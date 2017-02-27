@@ -221,7 +221,7 @@
 	<string>RSpec</string>
 	<key>uuid</key>
 	<string>4CEA47CC-2C3A-45FB-80BE-3820828227C2</string>
-  <key>require</key>
+	<key>require</key>
 	<array>
 		<dict>
 			<key>name</key>
