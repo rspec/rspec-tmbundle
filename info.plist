@@ -222,13 +222,13 @@
 	<key>uuid</key>
 	<string>4CEA47CC-2C3A-45FB-80BE-3820828227C2</string>
   <key>require</key>
-  <array>
-    <dict>
-      <key>name</key>
-      <string>Ruby</string>
-      <key>uuid</key>
-      <string>467B298F-6227-11D9-BFB1-000D93589AF6</string>
-    </dict>
-  </array>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>Ruby</string>
+			<key>uuid</key>
+			<string>467B298F-6227-11D9-BFB1-000D93589AF6</string>
+		</dict>
+	</array>
 </dict>
 </plist>
