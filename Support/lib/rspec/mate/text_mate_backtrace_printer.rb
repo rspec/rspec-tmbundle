@@ -333,8 +333,8 @@ dd.example.passed {
 }
 
 dd.example.not_implemented {
-  border-left: 5px solid #FAF834;
-  border-bottom: 1px solid #FAF834;
+  border-left: 5px solid #FADF4C;
+  border-bottom: 1px solid #FADF4C;
   background: #FCFB98; color: #131313;
 }
 
@@ -352,7 +352,7 @@ dd.example.failed {
 
 
 dt.not_implemented {
-  color: #000000; background: #FAF834;
+  color: #000000; background: #FADF4C;
 }
 
 dt.pending_fixed {
@@ -365,7 +365,7 @@ dt.failed {
 
 
 #rspec-progress.not_implemented {
-  color: #000000; background: #FAF834;
+  color: #000000; background: #FADF4C;
 }
 
 #rspec-progress.pending_fixed {
