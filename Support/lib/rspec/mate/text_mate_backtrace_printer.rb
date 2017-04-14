@@ -95,7 +95,7 @@ module RSpec
         end
 
         def move_progress(percent_done)
-          @output.puts "    <script type=\"text/javascript\">moveProgressBar('#{percent_done}');</script>"
+          @output.puts "    <script type=\"text/javascript\">moveProgressBar('#{percent_done}'); apply_filters();</script>"
           @output.flush
         end
 
