@@ -134,7 +134,7 @@ module RSpec
           "style=\"margin-left: #{(number_of_parents - 1) * 15}px;\""
         end
 
-        REPORT_HEADER = <<-EOF.freeze
+        REPORT_HEADER = <<-HTML.freeze
 <div class="rspec-report">
 <div id="rspec-header">
   <div id="rspec-progress-wrap"><div id="rspec-progress"></div></div>
@@ -157,9 +157,9 @@ module RSpec
 <div id="messages"></div>
 
 <div class="results">
-EOF
+HTML
 
-        GLOBAL_SCRIPTS = <<-EOF.freeze
+        GLOBAL_SCRIPTS = <<-JAVASCRIPT.freeze
 
 function addClass(element_id, classname) {
   document.getElementById(element_id).className += (" " + classname);
@@ -240,9 +240,9 @@ function assign_display_style_for_group(classname, display_flag, subgroup_flag) 
     }
   }
 }
-EOF
+JAVASCRIPT
 
-        GLOBAL_STYLES = <<-EOF.freeze
+        GLOBAL_STYLES = <<-CSS.freeze
 #rspec-header {
   position: relative;
   color: #fff;
@@ -438,9 +438,9 @@ a {
   color: #000000;
   background-color: #FFFBD3;
 }
-EOF
+CSS
 
-        HTML_HEADER = <<-EOF.freeze
+        HTML_HEADER = <<-HTML.freeze
 <!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -466,7 +466,7 @@ EOF
   </style>
 </head>
 <body>
-EOF
+HTML
       end
     end
   end
