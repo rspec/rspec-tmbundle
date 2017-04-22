@@ -32,6 +32,8 @@ module RSpec
         end
       end
 
+      subject(:command) { described_class.new }
+
       describe "in a regular app" do
         expect_twins [
           "/Users/aslakhellesoy/scm/rspec/trunk/RSpec.tmbundle/Support/spec/rspec/mate/switch_command_spec.rb",
@@ -193,7 +195,7 @@ module RSpec
           # '/Users/foo/Code/bar/spec/other/my/own/file.rb' => 'My::Own::File',
         }.each_pair do |path, class_name|
           it "extracts the full class name from the path (#{class_name})" do
-            expect(subject.described_class_for(path, base)).to eq(class_name)
+            expect(command.described_class_for(path, base)).to eq(class_name)
           end
         end
       end

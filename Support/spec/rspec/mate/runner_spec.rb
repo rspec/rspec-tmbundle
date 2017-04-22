@@ -14,7 +14,7 @@ describe RSpec::Mate::Runner do
     $stdout = original_stdout
   end
 
-  before(:each) do
+  before do
     # TODO: long path
     @first_failing_spec  = %r{fixtures/example_failing_spec\.rb:3}n
     @second_failing_spec = %r{fixtures/example_failing_spec\.rb:7}n
@@ -31,10 +31,10 @@ describe RSpec::Mate::Runner do
     stub_const("RSpec::Mate::Runner::LAST_RUN_CACHE", "/tmp/textmate_rspec_last_run.test.yml")
     stub_const("RSpec::Mate::Runner::LAST_REMEMBERED_FILE_CACHE", "/tmp/textmate_rspec_last_remembered_file_cache.test.txt")
 
-    @spec_mate = RSpec::Mate::Runner.new
+    @spec_mate = described_class.new
   end
 
-  after(:each) do
+  after do
     ENV.replace(@original_env)
 
     $".delete_if do |path|

@@ -16,7 +16,7 @@ describe RSpec::Mate::GutterMarks do
     example_with_location('./foo/failures.rb', 12) { raise "a failed example" }
     example_with_location('./foo/failures.rb', 24) { raise "another failure" }
     example_group.run
-    gm = RSpec::Mate::GutterMarks.new(example_group.examples)
+    gm = described_class.new(example_group.examples)
     expect(gm).to receive(:run_mate).with("--clear-mark=warning", "./foo/successes.rb")
     expect(gm).to receive(:run_mate).with("--clear-mark=warning", "./foo/failures.rb")
     expect(gm).to receive(:run_mate).with("--set-mark=warning:a failed example", "--line=12", "./foo/failures.rb")
