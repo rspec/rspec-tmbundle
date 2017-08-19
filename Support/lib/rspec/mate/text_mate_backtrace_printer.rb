@@ -29,6 +29,7 @@ module RSpec
           else
             @messages_before_start << str
           end
+          @output.flush
         end
 
         def print_html_start

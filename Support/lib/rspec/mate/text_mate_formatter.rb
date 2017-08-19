@@ -22,6 +22,8 @@ module RSpec
           @example_number = 0
           @header_red = nil
           @printer = TextMateBacktracePrinter.new(output)
+          @printer.print_html_start
+          @printer.flush
         end
 
         def message(notification)
@@ -35,7 +37,6 @@ module RSpec
 
         def start(notification)
           super
-          @printer.print_html_start
           @printer.flush
         end
 
