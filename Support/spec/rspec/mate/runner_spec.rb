@@ -127,14 +127,14 @@ describe RSpec::Mate::Runner do
       @spec_mate.run_files
     end
 
-    it_works_for '#run_focused' do
+    it_works_for '#run_focussed' do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '4'
       @spec_mate.run_focussed
     end
   end
 
-  describe "#run_focused" do
+  describe "#run_focussed" do
     it "runs first spec when file and line 4 specified" do
       ENV['TM_FILEPATH'] = fixtures_path('example_failing_spec.rb')
       ENV['TM_LINE_NUMBER'] = '4'
