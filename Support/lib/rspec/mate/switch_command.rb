@@ -98,8 +98,8 @@ module RSpec
 
       def create?(relative_twin, file_type)
         cmd = %('#{ENV['TM_SUPPORT_PATH']}/bin/CocoaDialog.app/Contents/MacOS/CocoaDialog') +
-              %(yesno-msgbox --no-cancel --icon document --informative-text "#{relative_twin}") +
-              %(--text "Create missing #{file_type}?")
+              %( yesno-msgbox --no-cancel --icon document --informative-text "#{relative_twin}") +
+              %( --text "Create missing #{file_type}?")
         answer = `#{cmd}`
         answer.to_s.chomp == "1"
       end
