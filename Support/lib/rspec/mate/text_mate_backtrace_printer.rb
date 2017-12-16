@@ -15,13 +15,17 @@ module RSpec
           @messages = []
           @messages_before_start = []
         end
+        
+        def escape_js_string(str)
+          h(str).gsub(/\r?\n/, '<br>')
+        end
 
         def message(str)
           str = str.strip
           return if @messages.include?(str) # Avoid duplicate messages (e.g. seed notifications in RSpec 3.2)
           @messages << str
           if @html_output_started
-            @output.puts "<script type='text/javascript'>addMessage('#{h str}')</script>"
+            @output.puts "<script type='text/javascript'>addMessage('#{escape_js_string str}')</script>"
           else
             @messages_before_start << str
           end
@@ -31,7 +35,7 @@ module RSpec
           @output.puts HTML_HEADER
           @output.puts REPORT_HEADER
           @messages_before_start.each do |msg|
-            @output.puts "<script type='text/javascript'>addMessage('#{h msg}')</script>"
+            @output.puts "<script type='text/javascript'>addMessage('#{escape_js_string msg}')</script>"
           end
           @html_output_started = true
         end

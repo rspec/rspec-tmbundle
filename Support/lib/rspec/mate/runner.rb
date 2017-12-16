@@ -58,6 +58,7 @@ module RSpec
         old_stderr = $stderr
         $stderr    = stderr
 
+        Thread.abort_on_exception = true
         Dir.chdir(project_directory) do
           cmd = Executable.find("rspec") + argv
           Open3.popen3(*cmd) do |i, out, err, _thread|
