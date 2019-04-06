@@ -107,7 +107,7 @@
 			<key>comment</key>
 			<string>Begin regexp must not match pending behaviours (see https://github.com/rspec/rspec-tmbundle/issues/31).</string>
 			<key>end</key>
-			<string>\b(do)\s*$</string>
+			<string>\b(do)(?=\s*$)</string>
 			<key>endCaptures</key>
 			<dict>
 				<key>1</key>
